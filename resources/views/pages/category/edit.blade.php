@@ -14,11 +14,11 @@
         @method('PUT')
 
         <div class="flex justify-end mb-4">
-        <a href="{{ route('categories.index', $category->id) }}"
-        class="px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 ">
-        Batal
-        </a>
-    </div>
+            <a href="{{ route('categories.index', $category->id) }}"
+            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 ">
+            Batal
+            </a>
+        </div>
 
         <div class="mb-4">
             <label class="block mb-2">

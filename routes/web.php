@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SupplierController;
 
     
 /*
@@ -16,6 +17,7 @@ use App\Http\Controllers\CategoryController;
 */
 
 Route::resource('categories', CategoryController::class);
+Route::resource('suppliers', SupplierController::class);
 
 Route::name('index-practice')->get('/', function () {
     return view('pages.practice.index');
