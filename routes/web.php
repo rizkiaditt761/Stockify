@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
 
+    
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::resource('categories', CategoryController::class);
+
 Route::name('index-practice')->get('/', function () {
     return view('pages.practice.index');
 });
