@@ -1,70 +1,133 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryAttributeController;
 use App\Http\Controllers\StockTransactionController;
 use App\Http\Controllers\StockMonitoringController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
+// Halaman awal
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
-Route::resource('categories', CategoryController::class);
-Route::prefix('categories/{category}')
-    ->name('category.attributes.')
-    ->group(function () {
+// Semua user harus login
+Route::middleware(['auth'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile (Laravel Breeze)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('role:admin')->group(function () {
+
+        Route::resource('categories', CategoryController::class);
+
+        Route::prefix('categories/{category}')
+            ->name('category.attributes.')
+            ->group(function () {
+
+                Route::get(
+                    'attributes',
+                    [CategoryAttributeController::class, 'index']
+                )->name('index');
+
+                Route::post(
+                    'attributes',
+                    [CategoryAttributeController::class, 'store']
+                )->name('store');
+            });
+
+        Route::resource('suppliers', SupplierController::class);
+
+        Route::resource('products', ProductController::class);
+        Route::resource('users', UserController::class)
+            ->middleware('role:admin');
+    });
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN + STAFF
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('role:admin,staff')->group(function () {
+
+        Route::resource(
+            'stock_transactions',
+            StockTransactionController::class
+        );
+
+    });
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN + MANAGER
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('role:admin,manager')->group(function () {
 
         Route::get(
-            'attributes',
-            [CategoryAttributeController::class, 'index']
-        )->name('index');
+            '/stock-monitoring',
+            [StockMonitoringController::class, 'index']
+        )->name('stock.monitoring.index');
 
-        Route::post(
-            'attributes',
-            [CategoryAttributeController::class, 'store']
-        )->name('store');
+        Route::resource(
+            'stock-opname',
+            StockOpnameController::class
+        )->names('stock.opname');
+
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->name('reports.index');
 
     });
 
-Route::resource('suppliers', SupplierController::class);
-
-Route::resource('products', ProductController::class);
-
-Route::resource('stock_transactions', StockTransactionController::class);
-
-Route::get('/stock-monitoring', 
-    [StockMonitoringController::class, 'index']
-)->name('stock.monitoring.index');
-
-Route::name('index-practice')->get('/', function () {
-    return view('pages.practice.index');
 });
 
-Route::get('/stock-opname', [StockOpnameController::class, 'index'])
-    ->name('stock.opname.index');
-Route::post('/stock-opname', [StockOpnameController::class, 'store'])
-    ->name('stock.opname.store');
-
-Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
-
-Route::name('practice.')->group(function () {
-    Route::name('first')->get('practice/1', function () {
-        return view('pages.practice.1');
-    });
-    Route::name('second')->get('practice/2', function () {
-        return view('pages.practice.2');
-    });
-});
+require __DIR__.'/auth.php';

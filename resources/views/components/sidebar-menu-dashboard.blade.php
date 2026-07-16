@@ -1,11 +1,16 @@
 @props(['icon' => null, 'routeName' => null, 'title' => null])
 
+@php
+    $prefix = explode('.', $routeName)[0];
+    $active = request()->routeIs($prefix . '.*');
+@endphp
+
 <li>
     <a href="{{ route($routeName) }}"
         class="flex items-center p-2 text-base rounded-lg group
-        {{ request()->routeIs($routeName)
+        {{ $active
             ? 'bg-blue-700 text-white'
-            : 'text-gray-900 hover:bg-blue-700 hover:text-white dark:text-gray-200 dark:hover:bg-blue-700 dark:hover:text-white' }}">
+            : 'text-gray-900 hover:bg-blue-700 hover:text-white' }}">
 
         {{ $icon }}
 

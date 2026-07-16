@@ -9,7 +9,7 @@
     </h1>
 
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5">
+    <div class="bg-white rounded-lg shadow p-5">
 
         <a href="{{ route('categories.create') }}"
     class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">

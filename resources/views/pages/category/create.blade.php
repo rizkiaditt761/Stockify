@@ -18,12 +18,7 @@
     </p>
     @enderror
 
-    <div class="flex justify-end mb-4">
-        <a href="{{ route('categories.index') }}"
-            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">
-            Batal
-        </a>
-    </div>
+    
 
         <div>
             <label class="block mb-2">
@@ -55,6 +50,13 @@
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
             Simpan
         </button>
+
+        
+        <a href="{{ route('categories.index') }}"
+             class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5">
+            Batal
+        </a>
+        
 
     </form>
     
