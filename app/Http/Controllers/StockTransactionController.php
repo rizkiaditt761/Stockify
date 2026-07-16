@@ -67,7 +67,7 @@ class StockTransactionController extends Controller
             'quantity' => $request->quantity,
             'stock_before' => $stockBefore,
             'stock_after' => $stockAfter,
-            'transaction_date' => $request->transaction_date,
+            'transaction_date' => now(),
             'status' => 'Completed',
             'notes' => $request->notes,
         ]);

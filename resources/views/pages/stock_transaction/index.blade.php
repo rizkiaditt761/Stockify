@@ -68,7 +68,7 @@
                     </td>
 
                     <td class="border p-2">
-                        {{ $transaction->transaction_date }}
+                        {{ $transaction->created_at->format('d-m-Y H:i') }}
                     </td>
 
                 </tr>

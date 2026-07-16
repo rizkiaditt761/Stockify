@@ -75,14 +75,7 @@
                 min="1">
         </div>
 
-        <div class="mb-4">
-            <label>Tanggal Transaksi</label>
-
-            <input
-                type="datetime-local"
-                name="transaction_date"
-                class="border rounded-lg p-2 w-full">
-        </div>
+        
 
         <div class="mb-4">
             <label>Catatan</label>

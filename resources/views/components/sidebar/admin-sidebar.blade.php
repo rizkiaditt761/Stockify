@@ -24,5 +24,9 @@
         routeName="stock.monitoring.index"
         title="Stock Monitoring"/>
 
+    <x-sidebar-menu-dashboard 
+        routeName="stock.opname.index"
+        title="Stock Opname"/>
+
 
 </x-sidebar-dashboard>

@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryAttributeController;
 use App\Http\Controllers\StockTransactionController;
 use App\Http\Controllers\StockMonitoringController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StockOpnameController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,8 +40,11 @@ Route::prefix('categories/{category}')
     });
 
 Route::resource('suppliers', SupplierController::class);
+
 Route::resource('products', ProductController::class);
+
 Route::resource('stock_transactions', StockTransactionController::class);
+
 Route::get('/stock-monitoring', 
     [StockMonitoringController::class, 'index']
 )->name('stock.monitoring.index');
@@ -48,7 +52,14 @@ Route::get('/stock-monitoring',
 Route::name('index-practice')->get('/', function () {
     return view('pages.practice.index');
 });
+
+Route::get('/stock-opname', [StockOpnameController::class, 'index'])
+    ->name('stock.opname.index');
+Route::post('/stock-opname', [StockOpnameController::class, 'store'])
+    ->name('stock.opname.store');
+
 Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
+
 Route::name('practice.')->group(function () {
     Route::name('first')->get('practice/1', function () {
         return view('pages.practice.1');

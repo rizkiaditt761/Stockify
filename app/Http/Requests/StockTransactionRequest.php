@@ -17,7 +17,6 @@ class StockTransactionRequest extends FormRequest
             'product_id' => 'required|exists:products,id',
             'type' => 'required|in:IN,OUT',
             'quantity' => 'required|integer|min:1',
-            'transaction_date' => 'required|date',
             'notes' => 'nullable|string',
         ];
     }
