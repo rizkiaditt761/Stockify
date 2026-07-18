@@ -1,8 +1,7 @@
 @props(['icon' => null, 'routeName' => null, 'title' => null])
 
 @php
-    $prefix = explode('.', $routeName)[0];
-    $active = request()->routeIs($prefix . '.*');
+    $active = request()->routeIs(str_replace('.index', '.*', $routeName));
 @endphp
 
 <li>
@@ -14,7 +13,7 @@
 
         {{ $icon }}
 
-        <span class="ml-3" sidebar-toggle-item>
+        <span class="ml-3">
             {{ $title }}
         </span>
     </a>

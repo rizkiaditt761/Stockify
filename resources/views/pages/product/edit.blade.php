@@ -57,9 +57,9 @@ Edit Produk
         <label>Kategori</label>
 
         <select
-            name="category_id"
-            class="border rounded-lg p-2 w-full">
-
+    id="category"
+    name="category_id"
+    class="border rounded-lg p-2 w-full">
             @foreach($categories as $category)
 
                 <option
@@ -149,6 +149,8 @@ Edit Produk
             class="border rounded-lg p-2 w-full">{{ old('description', $product->description) }}</textarea>
     </div>
 
+    <div id="attributeContainer" class="mt-6"></div>
+
 
     <button 
             type="submit"
@@ -159,5 +161,66 @@ Edit Produk
 </form>
 
 </div>
+
+<script>
+
+const productAttributes = @json(
+    $product->attributes->pluck('value', 'name')
+);
+
+function loadAttributes(categoryId){
+
+    fetch('/category-attributes/' + categoryId)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        let html = '';
+
+        data.forEach(function(attribute){
+
+            let value = productAttributes[attribute.name] ?? '';
+
+            html += `
+                <div class="mb-4">
+
+                    <label class="block mb-2 font-medium">
+                        ${attribute.name}
+                    </label>
+
+                    <input
+                        type="text"
+                        name="attributes[${attribute.id}]"
+                        value="${value}"
+                        class="w-full border rounded-lg p-2"
+                    >
+
+                </div>
+            `;
+
+        });
+
+        document
+            .getElementById('attributeContainer')
+            .innerHTML = html;
+
+    });
+
+}
+
+document
+.getElementById('category')
+.addEventListener('change', function(){
+
+    loadAttributes(this.value);
+
+});
+
+loadAttributes(
+    document.getElementById('category').value
+);
+
+</script>
 
 @endsection

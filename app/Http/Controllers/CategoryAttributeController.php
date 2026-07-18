@@ -23,35 +23,27 @@ class CategoryAttributeController extends Controller
 
  public function store(Request $request, Category $category)
 {
-    echo "1<br>";
-
     $request->validate([
         'attributes' => 'required|array',
     ]);
 
-    echo "2<br>";
-
+    // Hapus atribut lama
     $category->categoryAttributes()->delete();
 
-    echo "3<br>";
-
+    // Simpan atribut baru
     foreach ($request->input('attributes', []) as $attribute) {
 
-        echo "attribute = ".$attribute."<br>";
-
-        if (!empty($attribute)) {
+        if (!empty(trim($attribute))) {
 
             CategoryAttribute::create([
                 'category_id' => $category->id,
                 'name' => $attribute,
             ]);
-
-            echo "insert berhasil<br>";
         }
     }
 
-    echo "4<br>";
-
-    die();
+    return redirect()
+        ->route('categories.index')
+        ->with('success', 'Category attributes berhasil disimpan.');
 }
 }

@@ -57,9 +57,10 @@ class="border rounded-lg p-2 w-full">
 
 <label>Kategori</label>
 
-<select name="category_id"
-class="border rounded-lg p-2 w-full">
-
+<select
+    id="category"
+    name="category_id"
+    class="border rounded-lg p-2 w-full">
 @foreach($categories as $category)
 
 <option value="{{ $category->id }}">
@@ -147,6 +148,10 @@ class="border rounded-lg p-2 w-full"></textarea>
 
 </div>
 
+<div id="attributeContainer" class="mt-6">
+
+</div>
+
 
         <button 
             type="submit"
@@ -159,5 +164,49 @@ class="border rounded-lg p-2 w-full"></textarea>
 
 
 </div>
+<script>
 
+const category = document.getElementById('category');
+
+category.addEventListener('change', function () {
+
+    let id = this.value;
+
+    fetch('/category-attributes/' + id)
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            let html = '';
+
+            data.forEach(function(attribute){
+
+                html += `
+                    <div class="mb-4">
+
+                        <label class="block mb-2 font-medium">
+                            ${attribute.name}
+                        </label>
+
+                        <input
+                            type="text"
+                            name="attributes[${attribute.id}]"
+                            class="w-full border rounded-lg p-2"
+                        >
+
+                    </div>
+                `;
+
+            });
+
+            document.getElementById('attributeContainer').innerHTML = html;
+
+        });
+
+});
+
+category.dispatchEvent(new Event('change'));
+
+</script>
 @endsection

@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\Supplier;
 use App\Http\Requests\ProductRequest;
 use App\Services\Product\ProductService;
+use App\Models\ProductAttribute;
+use App\Models\StockTransaction;
 
 class ProductController extends Controller
 {
@@ -32,20 +34,63 @@ class ProductController extends Controller
         $categories = Category::all();
         $suppliers = Supplier::all();
 
-        return view('pages.product.create', compact('categories', 'suppliers'));
+        return view('pages.product.create', compact(
+            'categories', 
+            'suppliers'
+        ));
     }
 
 
-    public function store(ProductRequest $request)
-    {
-        $this->productService->create($request->validated());
+ public function store(ProductRequest $request)
+{
+    // Simpan produk
+    $product = Product::create($request->validated());
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Product successfully created.');
+    // Simpan atribut produk
+    if ($request->has('attributes')) {
+
+        $category = Category::with('categoryAttributes')
+            ->findOrFail($request->category_id);
+
+        $attributes = $request->input('attributes', []);
+
+        foreach ($category->categoryAttributes as $attribute) {
+
+            if (!empty($attributes[$attribute->id])) {
+
+                ProductAttribute::create([
+                    'product_id' => $product->id,
+                    'name'       => $attribute->name,
+                    'value'      => $attributes[$attribute->id],
+                ]);
+
+            }
+
+        }
+
     }
 
+    // Otomatis buat transaksi Initial Stock
+    if ($product->stock > 0) {
 
+        StockTransaction::create([
+            'product_id'       => $product->id,
+            'user_id'          => auth()->id(),
+            'type'             => 'IN',
+            'quantity'         => $product->stock,
+            'stock_before'     => 0,
+            'stock_after'      => $product->stock,
+            'transaction_date' => now(),
+            'status'           => 'Completed',
+            'notes'            => 'Initial Stock',
+        ]);
+
+    }
+
+    return redirect()
+        ->route('products.index')
+        ->with('success', 'Product successfully created.');
+}
     public function show(Product $product)
     {
         $product->load([
@@ -59,30 +104,52 @@ class ProductController extends Controller
 
 
     public function edit(Product $product)
-    {
-        $categories = Category::all();
-        $suppliers = Supplier::all();
+{
+    $product->load('attributes');
 
-        return view('pages.product.edit', compact(
+    $categories = Category::all();
+    $suppliers = Supplier::all();
+
+    return view(
+        'pages.product.edit',
+        compact(
             'product',
             'categories',
             'suppliers'
-        ));
+        )
+    );
+}
+
+
+   public function update(ProductRequest $request, Product $product)
+{
+    $product->update($request->validated());
+
+    $product->attributes()->delete();
+
+    $attributes = $request->input('attributes', []);
+
+    $category = Category::with('categoryAttributes')
+        ->findOrFail($request->category_id);
+
+    foreach ($category->categoryAttributes as $attribute) {
+
+        if (!empty($attributes[$attribute->id])) {
+
+            ProductAttribute::create([
+                'product_id' => $product->id,
+                'name'       => $attribute->name,
+                'value'      => $attributes[$attribute->id],
+            ]);
+
+        }
+
     }
 
-
-    public function update(ProductRequest $request, Product $product)
-    {
-        $this->productService->update(
-            $product->id,
-            $request->validated()
-        );
-
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Product updated successfully.');
-    }
-
+    return redirect()
+        ->route('products.index')
+        ->with('success', 'Product updated successfully.');
+}
 
     public function destroy(Product $product)
     {

@@ -6,6 +6,7 @@ use App\Http\Requests\StockTransactionRequest;
 use App\Models\Product;
 use App\Models\StockTransaction;
 use App\Services\StockTransaction\StockTransactionService;
+use Illuminate\Support\Facades\Auth;
 
 class StockTransactionController extends Controller
 {
@@ -62,7 +63,7 @@ class StockTransactionController extends Controller
 
         $this->stockTransactionService->createTransaction([
             'product_id' => $product->id,
-            'user_id' => 1,
+            'user_id' => Auth::id(),
             'type' => $request->type,
             'quantity' => $request->quantity,
             'stock_before' => $stockBefore,

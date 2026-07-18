@@ -21,6 +21,10 @@ class StockTransaction extends Model
     'notes',
     ];
 
+    protected $casts = [
+    'transaction_date' => 'datetime',
+];
+
     public function product()
     {
         return $this->belongsTo(Product::class);

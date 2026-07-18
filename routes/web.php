@@ -2,12 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Models\Category;
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryAttributeController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StockTransactionController;
 use App\Http\Controllers\StockMonitoringController;
 use App\Http\Controllers\StockOpnameController;
@@ -39,7 +41,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Profile (Laravel Breeze)
+    | Profile
     |--------------------------------------------------------------------------
     */
 
@@ -52,8 +54,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 
-
-
     /*
     |--------------------------------------------------------------------------
     | ADMIN
@@ -62,31 +62,71 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('role:admin')->group(function () {
 
+        /*
+        |--------------------------------------------------------------------------
+        | Category
+        |--------------------------------------------------------------------------
+        */
+
         Route::resource('categories', CategoryController::class);
 
+        // Halaman Kelola Atribut
         Route::prefix('categories/{category}')
             ->name('category.attributes.')
             ->group(function () {
 
                 Route::get(
-                    'attributes',
+                    '/attributes',
                     [CategoryAttributeController::class, 'index']
                 )->name('index');
 
                 Route::post(
-                    'attributes',
+                    '/attributes',
                     [CategoryAttributeController::class, 'store']
                 )->name('store');
             });
 
+        /*
+        |--------------------------------------------------------------------------
+        | API Attribute (AJAX)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/category-attributes/{category}',
+            function (Category $category) {
+
+                return response()->json(
+                    $category->categoryAttributes
+                );
+
+            }
+        )->name('category.attributes.json');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Supplier
+        |--------------------------------------------------------------------------
+        */
+
         Route::resource('suppliers', SupplierController::class);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Product
+        |--------------------------------------------------------------------------
+        */
+
         Route::resource('products', ProductController::class);
-        Route::resource('users', UserController::class)
-            ->middleware('role:admin');
+
+        /*
+        |--------------------------------------------------------------------------
+        | User
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource('users', UserController::class);
     });
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -102,8 +142,6 @@ Route::middleware(['auth'])->group(function () {
         );
 
     });
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -123,8 +161,15 @@ Route::middleware(['auth'])->group(function () {
             StockOpnameController::class
         )->names('stock.opname');
 
-        Route::get('/reports', [ReportController::class, 'index'])
-            ->name('reports.index');
+        Route::get(
+            '/reports',
+            [ReportController::class, 'index']
+        )->name('reports.index');
+
+        Route::get(
+            '/reports/export/pdf',
+            [ReportController::class, 'exportPdf']
+        )->name('reports.export.pdf');
 
     });
 

@@ -31,6 +31,8 @@
                 <th class="border p-2">Qty</th>
                 <th class="border p-2">Stock Awal</th>
                 <th class="border p-2">Stock Akhir</th>
+                <th class="border p-2">User</th>
+                <th class="border p-2">Catatan</th>
                 <th class="border p-2">Tanggal</th>
 
             </tr>
@@ -52,7 +54,17 @@
                     </td>
 
                     <td class="border p-2">
-                        {{ $transaction->type }}
+
+                        @if($transaction->type == 'IN')
+                            <span class="px-2 py-1 rounded bg-green-100 text-green-700 font-semibold">
+                                IN
+                            </span>
+                        @else
+                            <span class="px-2 py-1 rounded bg-red-100 text-red-700 font-semibold">
+                                OUT
+                            </span>
+                        @endif
+
                     </td>
 
                     <td class="border p-2">
@@ -68,7 +80,27 @@
                     </td>
 
                     <td class="border p-2">
-                        {{ $transaction->created_at->format('d-m-Y H:i') }}
+                        {{ $transaction->user->name }}
+                    </td>
+
+                    <td class="border p-2">
+
+                        @if($transaction->notes)
+
+                            <span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
+                                {{ $transaction->notes }}
+                            </span>
+
+                        @else
+
+                            -
+
+                        @endif
+
+                    </td>
+
+                    <td class="border p-2">
+                        {{ $transaction->transaction_date->format('d-m-Y H:i') }}
                     </td>
 
                 </tr>
@@ -77,7 +109,7 @@
 
                 <tr>
 
-                    <td colspan="7" class="text-center p-4">
+                    <td colspan="9" class="text-center p-4">
                         Belum ada transaksi.
                     </td>
 

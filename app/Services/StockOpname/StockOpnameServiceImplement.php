@@ -5,6 +5,8 @@ namespace App\Services\StockOpname;
 use LaravelEasyRepository\Service;
 use App\Repositories\StockOpname\StockOpnameRepository;
 use App\Models\Product;
+use App\Models\StockTransaction;
+use Illuminate\Support\Facades\Auth;
 
 class StockOpnameServiceImplement extends Service implements StockOpnameService
 {
@@ -24,18 +26,40 @@ class StockOpnameServiceImplement extends Service implements StockOpnameService
     {
         $product = Product::findOrFail($data['product_id']);
 
-        $difference = $data['physical_stock'] - $product->stock;
+        $systemStock = $product->stock;
+        $physicalStock = $data['physical_stock'];
 
+        // Selisih stok
+        $difference = $physicalStock - $systemStock;
+
+        // Simpan data stock opname
         $this->mainRepository->create([
-            'product_id' => $product->id,
-            'system_stock' => $product->stock,
-            'physical_stock' => $data['physical_stock'],
-            'difference' => $difference,
-            'note' => $data['note'] ?? null,
+            'product_id'     => $product->id,
+            'system_stock'   => $systemStock,
+            'physical_stock' => $physicalStock,
+            'difference'     => $difference,
+            'note'           => $data['note'] ?? null,
         ]);
 
+        // Update stok produk
         $product->update([
-            'stock' => $data['physical_stock'],
+            'stock' => $physicalStock,
         ]);
+
+        // Jika ada selisih, buat transaksi otomatis
+        if ($difference != 0) {
+
+            StockTransaction::create([
+                'product_id'       => $product->id,
+                'user_id'          => Auth::id(),
+                'type'             => $difference > 0 ? 'IN' : 'OUT',
+                'quantity'         => abs($difference),
+                'stock_before'     => $systemStock,
+                'stock_after'      => $physicalStock,
+                'transaction_date' => now(),
+                'status'           => 'Completed',
+                'notes'            => 'Penyesuaian Stock Opname',
+            ]);
+        }
     }
 }
