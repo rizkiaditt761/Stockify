@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 
+
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -77,6 +79,74 @@
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.2/datepicker.min.js"></script>
+
+    <script>
+const scrollBarStyle = document.createElement('style');
+
+scrollBarStyle.innerHTML = `
+::-webkit-scrollbar{
+    width:0px;
+    transition:all .25s;
+}
+.show-scrollbar::-webkit-scrollbar{
+    width:10px;
+}
+.show-scrollbar::-webkit-scrollbar-thumb{
+    background:#94a3b8;
+    border-radius:999px;
+}
+.show-scrollbar::-webkit-scrollbar-thumb:hover{
+    background:#64748b;
+}
+`;
+
+document.head.appendChild(scrollBarStyle);
+
+let timer;
+
+window.addEventListener('scroll', () => {
+
+    document.body.classList.add('show-scrollbar');
+
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+
+        document.body.classList.remove('show-scrollbar');
+
+    },700);
+
+});
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sidebar = document.getElementById('sidebar-scroll');
+
+
+    if(sidebar){
+
+        // kembalikan posisi scroll
+        sidebar.scrollTop = localStorage.getItem('sidebar-scroll') || 0;
+
+
+        // simpan posisi scroll
+        sidebar.addEventListener('scroll', function(){
+
+            localStorage.setItem(
+                'sidebar-scroll',
+                sidebar.scrollTop
+            );
+
+        });
+
+    }
+
+});
+
+</script>
 
 </body>
 

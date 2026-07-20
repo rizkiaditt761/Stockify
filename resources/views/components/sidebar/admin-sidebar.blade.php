@@ -1,57 +1,29 @@
-<x-sidebar-dashboard>
+<aside
+    id="logo-sidebar"
+    class="fixed top-[72px] left-0 z-40 w-64 h-[calc(100vh-72px)] transition-transform -translate-x-full bg-white border-r border-gray-200 lg:translate-x-0">
 
-    {{-- Dashboard --}}
-    <x-sidebar-menu-dashboard
-        routeName="dashboard"
-        title="Dashboard"/>
-
-    {{-- ADMIN --}}
-    @if(auth()->user()->role == 'admin')
-
-        <x-sidebar-menu-dashboard
-            routeName="categories.index"
-            title="Categories"/>
-
-        <x-sidebar-menu-dashboard
-            routeName="suppliers.index"
-            title="Suppliers"/>
-
-        <x-sidebar-menu-dashboard
-            routeName="products.index"
-            title="Products"/>
-
-        <x-sidebar-menu-dashboard
-            routeName="users.index"
-            title="Users Management"/>
-
-    @endif
+    <div class="h-full flex flex-col">
 
 
-    {{-- ADMIN & STAFF --}}
-    @if(in_array(auth()->user()->role, ['admin','staff']))
+        {{-- Header --}}
+        <div class="px-6 pt-6 pb-3">
 
-        <x-sidebar-menu-dashboard
-            routeName="stock_transactions.index"
-            title="Transactions"/>
+            <h2 class="text-xs font-semibold tracking-widest uppercase text-gray-400">
+                Main Menu
+            </h2>
 
-    @endif
+        </div>
 
 
-    {{-- ADMIN & MANAGER --}}
-    @if(in_array(auth()->user()->role, ['admin','manager']))
+        {{-- Menu --}}
+     <div id="sidebar-scroll"
+     class="flex-1 overflow-y-auto">
 
-        <x-sidebar-menu-dashboard
-            routeName="stock.monitoring.index"
-            title="Stock Monitoring"/>
+    <x-sidebar-menu-dashboard />
 
-        <x-sidebar-menu-dashboard
-            routeName="stock.opname.index"
-            title="Stock Opname"/>
+</div>
 
-        <x-sidebar-menu-dashboard
-        routeName="reports.index"
-        title="Reports"/>
 
-    @endif
+    </div>
 
-</x-sidebar-dashboard>
+</aside>
