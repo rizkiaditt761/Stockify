@@ -58,7 +58,7 @@ class StockOpnameServiceImplement extends Service implements StockOpnameService
                 'stock_after'      => $physicalStock,
                 'transaction_date' => now(),
                 'status'           => 'Completed',
-                'notes'            => 'Penyesuaian Stock Opname',
+                'notes'            => 'Stock Opname',
             ]);
         }
     }

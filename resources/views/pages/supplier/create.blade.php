@@ -4,84 +4,152 @@
 
 <div class="p-4">
 
-    <h1 class="text-2xl font-bold mb-5">
-        Add Supplier
-    </h1>
+    {{-- Header --}}
+    <div class="flex items-center justify-between mb-6">
 
-    <form action="{{ route('suppliers.store') }}" method="POST">
+        <div>
 
-        @csrf
+            <h1 class="text-3xl font-bold text-gray-800">
+                Tambah Supplier
+            </h1>
 
-        <div class="flex justify-end mb-4">
-            <a href="{{ route('suppliers.index') }}"
-            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 ">
-            Batal
-            </a>
-        </div>
-
-
-        <div class="mb-4">
-
-            <label class="block mb-2">
-                Nama Supplier
-            </label>
-
-            <input
-                type="text"
-                name="name"
-                value="{{ old('name') }}"
-                class="w-full border rounded-lg p-2">
+            <p class="mt-1 text-sm text-gray-500">
+                Tambahkan supplier baru yang akan digunakan pada sistem.
+            </p>
 
         </div>
 
-        <div class="mb-4">
 
-            <label class="block mb-2">
-                Alamat
-            </label>
+    </div>
 
-            <textarea
-                name="address"
-                rows="3"
-                class="w-full border rounded-lg p-2">{{ old('address') }}</textarea>
 
-        </div>
+    {{-- Card --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
 
-        <div class="mb-4">
+        <form
+            action="{{ route('suppliers.store') }}"
+            method="POST"
+            class="p-6">
 
-            <label class="block mb-2">
-                Nomor HP
-            </label>
+            @csrf
 
-            <input
-                type="text"
-                name="phone"
-                value="{{ old('phone') }}"
-                class="w-full border rounded-lg p-2">
+            @if ($errors->any())
 
-        </div>
+                <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
 
-        <div class="mb-4">
+                    <h3 class="font-semibold text-red-700 mb-2">
+                        Terjadi kesalahan
+                    </h3>
 
-            <label class="block mb-2">
-                Email
-            </label>
+                    <ul class="list-disc list-inside text-sm text-red-600">
 
-            <input
-                type="email"
-                name="email"
-                value="{{ old('email') }}"
-                class="w-full border rounded-lg p-2">
+                        @foreach ($errors->all() as $error)
 
-        </div>
+                            <li>{{ $error }}</li>
 
-        <button 
-            type="submit"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
-            Simpan
-        </button>
+                        @endforeach
 
-    </form>
+                    </ul>
+
+                </div>
+
+            @endif
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {{-- Nama --}}
+                <div>
+
+                    <label class="block mb-2 text-sm font-medium text-gray-700">
+                        Nama Supplier
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        value="{{ old('name') }}"
+                        placeholder="Masukkan nama supplier"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+
+                </div>
+
+
+                {{-- Nomor HP --}}
+                <div>
+
+                    <label class="block mb-2 text-sm font-medium text-gray-700">
+                        Nomor HP
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        value="{{ old('phone') }}"
+                        placeholder="08xxxxxxxxxx"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+
+                </div>
+
+            </div>
+
+
+            {{-- Email --}}
+            <div class="mt-6">
+
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    placeholder="supplier@email.com"
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+
+            </div>
+
+
+            {{-- Alamat --}}
+            <div class="mt-6">
+
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Alamat
+                </label>
+
+                <textarea
+                    name="address"
+                    rows="4"
+                    placeholder="Masukkan alamat supplier"
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">{{ old('address') }}</textarea>
+
+            </div>
+
+
+            {{-- Button --}}
+            <div class="flex gap-3 mt-8">
+
+                <button
+                    type="submit"
+                    class="px-5 py-2.5 rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition">
+
+                    Simpan Supplier
+
+                </button>
+
+                <a href="{{ route('suppliers.index') }}"
+                    class="px-5 py-2.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">
+
+                    Batal
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

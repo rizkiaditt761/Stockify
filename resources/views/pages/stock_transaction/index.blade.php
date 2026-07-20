@@ -4,122 +4,214 @@
 
 <div class="p-4">
 
-    <h1 class="text-2xl font-bold mb-5">
-        Stock Transaction
-    </h1>
+    {{-- Header --}}
+    <div class="mb-6 flex items-center justify-between">
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4">
-            {{ session('success') }}
+        <div>
+
+            <h1 class="text-3xl font-bold text-gray-800">
+                Transaksi Stok
+            </h1>
+
+            <p class="mt-1 text-sm text-gray-500">
+                Riwayat seluruh transaksi barang masuk dan barang keluar.
+            </p>
+
         </div>
+
+        <a href="{{ route('stock_transactions.create') }}"
+            class="inline-flex items-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700">
+
+            + Tambah Transaksi
+
+        </a>
+
+    </div>
+
+
+    {{-- Alert Success --}}
+    @if(session('success'))
+
+        <div class="mb-5 rounded-lg border border-green-200 bg-green-50 p-4 text-green-700">
+
+            {{ session('success') }}
+
+        </div>
+
     @endif
 
-    <a href="{{ route('stock_transactions.create') }}"
-        class="inline-block mb-5 bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-800">
-        Tambah Transaksi
-    </a>
 
-    <table class="w-full border">
+    {{-- Table --}}
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
 
-        <thead class="bg-gray-100">
+        <div class="overflow-x-auto">
 
-            <tr>
+            <table class="w-full text-sm">
 
-                <th class="border p-2">No</th>
-                <th class="border p-2">Produk</th>
-                <th class="border p-2">Jenis</th>
-                <th class="border p-2">Qty</th>
-                <th class="border p-2">Stock Awal</th>
-                <th class="border p-2">Stock Akhir</th>
-                <th class="border p-2">User</th>
-                <th class="border p-2">Catatan</th>
-                <th class="border p-2">Tanggal</th>
+                <thead class="bg-gray-50 uppercase text-xs text-gray-600">
 
-            </tr>
+                    <tr>
 
-        </thead>
+                        <th class="px-6 py-4 text-left">
+                            No
+                        </th>
 
-        <tbody>
+                        <th class="px-6 py-4 text-left">
+                            Produk
+                        </th>
 
-            @forelse($transactions as $transaction)
+                        <th class="px-6 py-4 text-center">
+                            Jenis
+                        </th>
 
-                <tr>
+                        <th class="px-6 py-4 text-center">
+                            Qty
+                        </th>
 
-                    <td class="border p-2">
-                        {{ $loop->iteration }}
-                    </td>
+                        <th class="px-6 py-4 text-center">
+                            Stok Awal
+                        </th>
 
-                    <td class="border p-2">
-                        {{ $transaction->product->name }}
-                    </td>
+                        <th class="px-6 py-4 text-center">
+                            Stok Akhir
+                        </th>
 
-                    <td class="border p-2">
+                        <th class="px-6 py-4 text-left">
+                            User
+                        </th>
 
-                        @if($transaction->type == 'IN')
-                            <span class="px-2 py-1 rounded bg-green-100 text-green-700 font-semibold">
-                                IN
-                            </span>
-                        @else
-                            <span class="px-2 py-1 rounded bg-red-100 text-red-700 font-semibold">
-                                OUT
-                            </span>
-                        @endif
+                        <th class="px-6 py-4 text-left">
+                            Catatan
+                        </th>
 
-                    </td>
+                        <th class="px-6 py-4 text-center">
+                            Tanggal
+                        </th>
 
-                    <td class="border p-2">
-                        {{ $transaction->quantity }}
-                    </td>
+                    </tr>
 
-                    <td class="border p-2">
-                        {{ $transaction->stock_before }}
-                    </td>
+                </thead>
 
-                    <td class="border p-2">
-                        {{ $transaction->stock_after }}
-                    </td>
+                <tbody>
 
-                    <td class="border p-2">
-                        {{ $transaction->user->name }}
-                    </td>
+                    @forelse($transactions as $transaction)
 
-                    <td class="border p-2">
+                        <tr class="border-t transition hover:bg-gray-50">
 
-                        @if($transaction->notes)
+                            <td class="px-6 py-4">
 
-                            <span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
-                                {{ $transaction->notes }}
-                            </span>
+                                {{ $loop->iteration }}
 
-                        @else
+                            </td>
 
-                            -
+                            <td class="px-6 py-4 font-medium text-gray-800">
 
-                        @endif
+                                {{ $transaction->product->name }}
 
-                    </td>
+                            </td>
 
-                    <td class="border p-2">
-                        {{ $transaction->transaction_date->format('d-m-Y H:i') }}
-                    </td>
+                            <td class="px-6 py-4 text-center">
 
-                </tr>
+                                @if($transaction->type == 'IN')
 
-            @empty
+                                    <span class="inline-flex whitespace-nowrap rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                                        Stock In
+                                    </span>
 
-                <tr>
+                                @else
 
-                    <td colspan="9" class="text-center p-4">
-                        Belum ada transaksi.
-                    </td>
+                                    <span class="inline-flex whitespace-nowrap rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+                                        Stock In
+                                    </span>
 
-                </tr>
+                                @endif
 
-            @endforelse
+                            </td>
 
-        </tbody>
+                            <td class="px-6 py-4 text-center font-semibold">
 
-    </table>
+                                {{ $transaction->quantity }}
+
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+
+                                {{ $transaction->stock_before }}
+
+                            </td>
+
+                            <td class="px-6 py-4 text-center font-semibold text-blue-600">
+
+                                {{ $transaction->stock_after }}
+
+                            </td>
+
+                            <td class="px-6 py-4">
+
+                                {{ $transaction->user->name }}
+
+                            </td>
+
+                            <td class="px-6 py-4">
+
+                                @if($transaction->notes)
+
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-700">
+
+                                        {{ $transaction->notes }}
+
+                                    </span>
+
+                                @else
+
+                                    <span class="text-gray-400">
+
+                                        -
+
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+
+                                {{ $transaction->transaction_date->format('d M Y') }}
+
+                                <br>
+
+                                <span class="text-xs text-gray-500">
+
+                                    {{ $transaction->transaction_date->format('H:i') }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td colspan="9"
+                                class="py-10 text-center text-gray-500">
+
+                                Belum ada transaksi stok.
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
 
 </div>
 

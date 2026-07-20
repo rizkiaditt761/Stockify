@@ -4,87 +4,153 @@
 
 <div class="p-4">
 
-    <h1 class="text-2xl font-bold mb-5">
-        Edit Supplier
-    </h1>
+    {{-- Header --}}
+    <div class="flex items-center justify-between mb-6">
 
-    <form action="{{ route('suppliers.update',$supplier->id) }}" method="POST">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                Edit Supplier
+            </h1>
 
-        @csrf
-        @method('PUT')
-
-        <div class="flex justify-end mb-4">
-            <a href="{{ route('suppliers.index', $supplier->id) }}"
-            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 ">
-            Batal
-            </a>
+            <p class="mt-1 text-sm text-gray-500">
+                Perbarui informasi supplier yang terdaftar.
+            </p>
         </div>
 
+        <a href="{{ route('suppliers.index') }}"
+            class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">
 
-        <div class="mb-4">
+            ← Kembali
 
-            <label class="block mb-2">
-                Nama Supplier
-            </label>
+        </a>
 
-            <input
-                type="text"
-                name="name"
-                value="{{ old('name',$supplier->name) }}"
-                class="w-full border rounded-lg p-2">
+    </div>
 
-        </div>
+    {{-- Card --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
 
-        <div class="mb-4">
+        <form action="{{ route('suppliers.update', $supplier->id) }}"
+            method="POST"
+            class="p-6">
 
-            <label class="block mb-2">
-                Alamat
-            </label>
+            @csrf
+            @method('PUT')
 
-            <textarea
-                name="address"
-                rows="3"
-                class="w-full border rounded-lg p-2">{{ old('address',$supplier->address) }}</textarea>
+            @if ($errors->any())
 
-        </div>
+                <div class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
 
-        <div class="mb-4">
+                    <h3 class="font-semibold text-red-700 mb-2">
+                        Terjadi kesalahan
+                    </h3>
 
-            <label class="block mb-2">
-                Nomor HP
-            </label>
+                    <ul class="list-disc list-inside text-sm text-red-600">
 
-            <input
-                type="text"
-                name="phone"
-                value="{{ old('phone',$supplier->phone) }}"
-                class="w-full border rounded-lg p-2">
+                        @foreach ($errors->all() as $error)
 
-        </div>
+                            <li>{{ $error }}</li>
 
-        <div class="mb-4">
+                        @endforeach
 
-            <label class="block mb-2">
-                Email
-            </label>
+                    </ul>
 
-            <input
-                type="email"
-                name="email"
-                value="{{ old('email',$supplier->email) }}"
-                class="w-full border rounded-lg p-2">
+                </div>
 
-        </div>
+            @endif
 
-        <button
-            type="submit"
-            class="bg-blue-700 text-white px-5 py-2 rounded-lg">
 
-            Update
+            {{-- Nama --}}
+            <div class="mb-5">
 
-        </button>
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Nama Supplier
+                </label>
 
-    </form>
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ old('name', $supplier->name) }}"
+                    placeholder="Masukkan nama supplier"
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+
+            </div>
+
+
+            {{-- Alamat --}}
+            <div class="mb-5">
+
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Alamat
+                </label>
+
+                <textarea
+                    name="address"
+                    rows="4"
+                    placeholder="Masukkan alamat supplier"
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">{{ old('address', $supplier->address) }}</textarea>
+
+            </div>
+
+
+            {{-- HP & Email --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+
+                <div>
+
+                    <label class="block mb-2 text-sm font-medium text-gray-700">
+                        Nomor HP
+                    </label>
+
+                    <input
+                        type="text"
+                        name="phone"
+                        value="{{ old('phone', $supplier->phone) }}"
+                        placeholder="08xxxxxxxxxx"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+
+                </div>
+
+                <div>
+
+                    <label class="block mb-2 text-sm font-medium text-gray-700">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ old('email', $supplier->email) }}"
+                        placeholder="supplier@email.com"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+
+                </div>
+
+            </div>
+
+
+            {{-- Button --}}
+            <div class="flex gap-3">
+
+                <button
+                    type="submit"
+                    class="px-5 py-2.5 rounded-lg bg-blue-700 text-white hover:bg-blue-800">
+
+                    Simpan Perubahan
+
+                </button>
+
+                <a href="{{ route('suppliers.index') }}"
+                    class="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+
+                    Batal
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
