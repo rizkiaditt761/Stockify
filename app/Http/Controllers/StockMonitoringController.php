@@ -9,13 +9,38 @@ class StockMonitoringController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with('category')
-            ->when($request->search, function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            })
+        $status = $request->status;
+
+        $query = Product::with('category');
+
+        // Filter berdasarkan status stok
+        if ($status == 'safe') {
+
+            $query->whereColumn('stock', '>', 'minimum_stock');
+
+        } elseif ($status == 'low') {
+
+            $query->where('stock', '>', 0)
+                ->whereColumn('stock', '<=', 'minimum_stock');
+
+        } elseif ($status == 'empty') {
+
+            $query->where('stock', 0);
+
+        }
+
+        // Search
+        if ($request->filled('search')) {
+
+            $query->where('name', 'like', '%' . $request->search . '%');
+
+        }
+
+        $products = $query
             ->orderBy('name')
             ->get();
 
+        // Statistik
         $totalProduct = Product::count();
 
         $stockSafe = Product::whereColumn('stock', '>', 'minimum_stock')->count();
@@ -31,7 +56,8 @@ class StockMonitoringController extends Controller
             'totalProduct',
             'stockSafe',
             'stockLow',
-            'stockEmpty'
+            'stockEmpty',
+            'status'
         ));
     }
 }
