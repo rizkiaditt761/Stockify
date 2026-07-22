@@ -14,12 +14,11 @@
             </h1>
 
             <p class="mt-1 text-sm text-gray-500">
-                Catat transaksi barang masuk maupun barang keluar.
+                Ajukan transaksi barang masuk maupun barang keluar.
+                Transaksi akan menunggu konfirmasi Staff Gudang sebelum stok diperbarui.
             </p>
 
         </div>
-
-        
 
     </div>
 
@@ -33,6 +32,42 @@
 
             @csrf
 
+
+            {{-- Informasi Workflow Baru --}}
+            <div class="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+
+                <h3 class="font-semibold text-yellow-800">
+                    Informasi Transaksi
+                </h3>
+
+                <p class="mt-1 text-sm text-yellow-700">
+
+                    Transaksi yang dibuat akan berstatus
+                    <b>Pending</b>.
+                    Perubahan stok hanya dilakukan setelah Staff Gudang melakukan konfirmasi.
+
+                </p>
+
+            </div>
+
+            {{-- Session Error --}}
+@if(session('error'))
+
+    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+
+        <h3 class="font-semibold text-red-700">
+            Transaksi Ditolak
+        </h3>
+
+        <p class="mt-1 text-sm text-red-600">
+            {{ session('error') }}
+        </p>
+
+    </div>
+
+@endif
+
+            {{-- Error Validation --}}
             @if ($errors->any())
 
                 <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
@@ -41,11 +76,14 @@
                         Terjadi kesalahan
                     </h3>
 
+
                     <ul class="list-disc pl-5 text-sm text-red-600">
 
                         @foreach ($errors->all() as $error)
 
-                            <li>{{ $error }}</li>
+                            <li>
+                                {{ $error }}
+                            </li>
 
                         @endforeach
 
@@ -56,6 +94,8 @@
             @endif
 
 
+
+
             {{-- Produk --}}
             <div class="mb-5">
 
@@ -63,9 +103,15 @@
                     Produk
                 </label>
 
+
                 <select
                     name="product_id"
                     class="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring-blue-500">
+
+
+                    <option value="" >
+                        Pilih Produk
+                    </option>
 
                     @foreach($products as $product)
 
@@ -76,43 +122,68 @@
 
                         </option>
 
+
                     @endforeach
 
+
                 </select>
+
 
             </div>
 
 
-            {{-- Jenis --}}
+
+
+
+            {{-- Jenis Transaksi --}}
             <div class="mb-5">
 
                 <label class="mb-2 block text-sm font-medium text-gray-700">
                     Jenis Transaksi
                 </label>
 
+
                 <select
                     name="type"
                     class="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring-blue-500">
 
-                    <option value="IN" {{ old('type') == 'IN' ? 'selected' : '' }}>
-                        Stock In
+                    <option value="" >
+                        Pilih Jenis Transaksi
                     </option>
 
-                    <option value="OUT" {{ old('type') == 'OUT' ? 'selected' : '' }}>
-                        Stock Out
+                    <option value="IN"
+                        {{ old('type') == 'IN' ? 'selected' : '' }}>
+
+                        Stock In
+
                     </option>
+
+
+                    <option value="OUT"
+                        {{ old('type') == 'OUT' ? 'selected' : '' }}>
+
+                        Stock Out
+
+                    </option>
+
 
                 </select>
+
 
             </div>
 
 
-            {{-- Jumlah --}}
+
+
+
+            {{-- Jumlah Barang --}}
             <div class="mb-5">
+
 
                 <label class="mb-2 block text-sm font-medium text-gray-700">
                     Jumlah Barang
                 </label>
+
 
                 <input
                     type="number"
@@ -122,15 +193,21 @@
                     placeholder="Masukkan jumlah barang"
                     class="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring-blue-500">
 
+
             </div>
+
+
+
 
 
             {{-- Catatan --}}
             <div class="mb-6">
 
+
                 <label class="mb-2 block text-sm font-medium text-gray-700">
                     Catatan (Opsional)
                 </label>
+
 
                 <textarea
                     name="notes"
@@ -138,33 +215,51 @@
                     placeholder="Masukkan catatan transaksi..."
                     class="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring-blue-500">{{ old('notes') }}</textarea>
 
+
             </div>
+
+
+
 
 
             {{-- Button --}}
             <div class="flex gap-3">
 
+
                 <button
                     type="submit"
                     class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700">
 
-                    Simpan Transaksi
+
+                    Ajukan Transaksi
+
 
                 </button>
+
+
+
 
                 <a href="{{ route('stock_transactions.index') }}"
                     class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
 
+
                     Batal
+
 
                 </a>
 
+
+
             </div>
+
 
         </form>
 
+
     </div>
 
+
 </div>
+
 
 @endsection

@@ -33,6 +33,7 @@
     @endif
 
     {{-- Form --}}
+    @if(auth()->user()->role == 'manager')
     <div class="mb-8 rounded-xl border border-gray-200 bg-white shadow-sm">
 
         <div class="border-b border-gray-200 px-6 py-4">
@@ -171,6 +172,7 @@
         </form>
 
     </div>
+    @endif
 
         {{-- Riwayat Stock Opname --}}
     <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">

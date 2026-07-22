@@ -7,4 +7,8 @@ use LaravelEasyRepository\BaseService;
 interface StockTransactionService extends BaseService
 {
     public function createTransaction(array $data);
+
+    public function findById($id);
+
+    public function updateTransaction($id, array $data);
 }
