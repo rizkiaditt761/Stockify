@@ -8,56 +8,113 @@ use Illuminate\Http\Request;
 class StockMonitoringController extends Controller
 {
     public function index(Request $request)
-    {
-        $status = $request->status;
+{
+    $status = $request->status;
 
-        $query = Product::with('category');
+    $query = Product::with('category');
 
-        // Filter berdasarkan status stok
-        if ($status == 'safe') {
+    /*
+    |--------------------------------------------------------------------------
+    | Filter Status
+    |--------------------------------------------------------------------------
+    */
 
-            $query->whereColumn('stock', '>', 'minimum_stock');
+    if ($status == 'safe') {
 
-        } elseif ($status == 'low') {
+        $query->where('is_active', true)
+              ->whereColumn('stock', '>', 'minimum_stock');
 
-            $query->where('stock', '>', 0)
-                ->whereColumn('stock', '<=', 'minimum_stock');
+    } elseif ($status == 'low') {
 
-        } elseif ($status == 'empty') {
+        $query->where('is_active', true)
+              ->where('stock', '>', 0)
+              ->whereColumn('stock', '<=', 'minimum_stock');
 
-            $query->where('stock', 0);
+    } elseif ($status == 'empty') {
 
-        }
+        $query->where('is_active', true)
+              ->where('stock', 0);
 
-        // Search
-        if ($request->filled('search')) {
+    } elseif ($status == 'inactive') {
 
-            $query->where('name', 'like', '%' . $request->search . '%');
+        $query->where('is_active', false);
 
-        }
+    }
 
-        $products = $query
-            ->orderBy('name')
-            ->get();
+    /*
+    |--------------------------------------------------------------------------
+    | Search Product / Category
+    |--------------------------------------------------------------------------
+    */
 
-        // Statistik
-        $totalProduct = Product::count();
+    if ($request->filled('search')) {
 
-        $stockSafe = Product::whereColumn('stock', '>', 'minimum_stock')->count();
+        $search = $request->search;
 
-        $stockLow = Product::where('stock', '>', 0)
-            ->whereColumn('stock', '<=', 'minimum_stock')
-            ->count();
+        $query->where(function ($q) use ($search) {
 
-        $stockEmpty = Product::where('stock', 0)->count();
+            $q->where(
+                'name',
+                'like',
+                "%{$search}%"
+            )
 
-        return view('pages.stock_monitoring.index', compact(
+            ->orWhereHas('category', function ($category) use ($search) {
+
+                $category->where(
+                    'name',
+                    'like',
+                    "%{$search}%"
+                );
+
+            });
+
+        });
+
+    }
+
+    $products = $query
+        ->orderBy('name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Statistic Card
+    |--------------------------------------------------------------------------
+    */
+
+    $totalProduct = Product::count();
+
+    $totalStock = Product::sum('stock');
+
+    $stockSafe = Product::where('is_active', true)
+        ->whereColumn('stock', '>', 'minimum_stock')
+        ->count();
+
+    $stockLow = Product::where('is_active', true)
+        ->where('stock', '>', 0)
+        ->whereColumn('stock', '<=', 'minimum_stock')
+        ->count();
+
+    $stockEmpty = Product::where('is_active', true)
+        ->where('stock', 0)
+        ->count();
+
+    $stockInactive = Product::where('is_active', false)
+        ->count();
+
+    return view(
+        'pages.stock_monitoring.index',
+        compact(
             'products',
             'totalProduct',
+            'totalStock',
             'stockSafe',
             'stockLow',
             'stockEmpty',
+            'stockInactive',
             'status'
-        ));
-    }
+        )
+    );
+}
 }

@@ -108,7 +108,20 @@ Route::middleware(['auth'])->group(function () {
             SupplierController::class
         )->except(['index', 'show']);
 
-        // Product DELETE only
+            /*
+        |--------------------------------------------------------------------------
+        | Product Status
+        |--------------------------------------------------------------------------
+        */
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Product Delete (Temporary)
+        |--------------------------------------------------------------------------
+        */
+
         Route::delete(
             '/products/{product}',
             [ProductController::class, 'destroy']
@@ -119,6 +132,20 @@ Route::middleware(['auth'])->group(function () {
             'users',
             UserController::class
         );
+    });
+
+    Route::middleware('role:admin,manager')->group(function () {
+
+    Route::patch(
+        '/products/{product}/activate',
+        [ProductController::class, 'activate']
+    )->name('products.activate');
+
+    Route::patch(
+        '/products/{product}/deactivate',
+        [ProductController::class, 'deactivate']
+    )->name('products.deactivate');
+
     });
 
     /*

@@ -6,5 +6,7 @@ use LaravelEasyRepository\BaseService;
 
 interface ProductService extends BaseService{
 
-    // Write something awesome :)
+    public function activate($id);
+
+    public function deactivate($id);
 }

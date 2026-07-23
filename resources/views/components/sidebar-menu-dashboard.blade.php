@@ -176,7 +176,7 @@
                 </svg>
 
                 <span class="font-medium">
-                    Inventory
+                    Stock Monitoring
                 </span>
 
             </a>

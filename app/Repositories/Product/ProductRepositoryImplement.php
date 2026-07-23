@@ -19,5 +19,27 @@ class ProductRepositoryImplement extends Eloquent implements ProductRepository{
         $this->model = $model;
     }
 
-    // Write something awesome :)
+    public function activate($id)
+    {
+        $product = $this->model->findOrFail($id);
+
+        $product->update([
+            'is_active' => true,
+        ]);
+
+        return $product;
+    }
+
+    public function deactivate($id)
+    {
+        $product = $this->model->findOrFail($id);
+
+        $product->update([
+            'is_active' => false,
+        ]);
+
+        return $product;
+    }
+
+    
 }

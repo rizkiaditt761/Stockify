@@ -184,20 +184,22 @@ class StockTransactionController extends Controller
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | Create
-    |--------------------------------------------------------------------------
-    */
+|--------------------------------------------------------------------------
+| Create
+|--------------------------------------------------------------------------
+*/
 
-    public function create()
-    {
-        $products = Product::orderBy('name')->get();
+public function create()
+{
+    $products = Product::where('is_active', true)
+        ->orderBy('name')
+        ->get();
 
-        return view(
-            'pages.stock_transaction.create',
-            compact('products')
-        );
-    }
+    return view(
+        'pages.stock_transaction.create',
+        compact('products')
+    );
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -207,9 +209,18 @@ class StockTransactionController extends Controller
 
     public function store(StockTransactionRequest $request)
     {
-        $product = Product::findOrFail(
-            $request->product_id
-        );
+        $product = Product::findOrFail($request->product_id);
+
+        if (!$product->is_active) {
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Produk sudah dinonaktifkan dan tidak dapat digunakan untuk transaksi.'
+                );
+
+        }
 
         if(
             $request->type == 'OUT'

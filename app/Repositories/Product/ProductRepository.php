@@ -6,5 +6,7 @@ use LaravelEasyRepository\Repository;
 
 interface ProductRepository extends Repository{
 
-    // Write something awesome :)
+    public function activate($id);
+
+    public function deactivate($id);
 }

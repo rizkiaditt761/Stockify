@@ -82,47 +82,77 @@
 
     <div class="flex flex-col md:flex-row gap-3 mb-6">
 
-        <form method="GET" class="flex flex-col md:flex-row gap-3">
+       <form method="GET" class="flex flex-col md:flex-row gap-3">
 
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Cari produk..."
-                class="border rounded-lg px-4 py-2 w-72">
+    {{-- Search --}}
+    <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Cari produk..."
+        class="border rounded-lg px-4 py-2 w-72">
 
-            <select
-                name="category"
-                onchange="this.form.submit()"
-                class="border rounded-lg px-4 py-2 w-60">
+    {{-- Filter Kategori --}}
+    <select
+        name="category"
+        onchange="this.form.submit()"
+        class="border rounded-lg px-4 py-2 w-60">
 
-                <option value="">
-                    Pilih Kategori
-                </option>
+        <option value="">
+            Pilih Kategori
+        </option>
 
-                @foreach($categories as $category)
+        @foreach($categories as $category)
 
-                    <option
-                        value="{{ $category->id }}"
-                        {{ request('category') == $category->id ? 'selected' : '' }}>
+            <option
+                value="{{ $category->id }}"
+                {{ request('category') == $category->id ? 'selected' : '' }}>
 
-                        {{ $category->name }}
+                {{ $category->name }}
 
-                    </option>
+            </option>
 
-                @endforeach
+        @endforeach
 
-            </select>
+    </select>
 
-            <button
-                type="submit"
-                class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+    {{-- Filter Status (Admin, Manager Only) --}}
+  @if(in_array(auth()->user()->role, ['admin','manager']))
 
-                Cari
+        <select
+            name="status"
+            onchange="this.form.submit()"
+            class="border rounded-lg px-4 py-2 w-50">
 
-            </button>
+            <option value="all"
+            {{ request('status', 'all') == 'all' ? 'selected' : '' }}>
+                Semua
+            </option>
 
-        </form>
+            <option value="active"
+            {{ request('status') == 'active' ? 'selected' : '' }}>
+                Active
+            </option>
+
+            <option value="inactive"
+            {{ request('status') == 'inactive' ? 'selected' : '' }}>
+                Inactive
+            </option>
+
+        </select>
+
+    @endif
+
+    {{-- Button --}}
+    <button
+        type="submit"
+        class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+
+        Cari
+
+    </button>
+
+</form>
 
         @if(request('search') || request('category'))
 
@@ -174,6 +204,10 @@
                         </th>
 
                         <th class="px-6 py-4 text-center">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-4 text-center">
                             Action
                         </th>
 
@@ -193,11 +227,16 @@
 
                         </td>
 
-                        <td class="px-6 py-4 font-medium">
+                      <td class="px-6 py-4">
 
-                            {{ $product->name }}
+                        <div class="font-medium">
 
-                        </td>
+                                    {{ $product->name }}
+
+                                </div>
+
+                                
+                            </td>
 
                         <td class="px-6 py-4">
 
@@ -243,7 +282,29 @@
 
                         <td class="px-6 py-4 text-center">
 
-                            <div class="flex justify-center gap-2">
+                        @if($product->is_active)
+
+                            <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+
+                                Active
+
+                            </span>
+
+                        @else
+
+                            <span class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
+
+                                Inactive
+
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                        <td class="px-6 py-4 text-center">
+
+                           <div class="flex justify-start gap-2">
 
                                 {{-- Detail --}}
                                 <a href="{{ route('products.show',$product->id) }}"
@@ -265,28 +326,51 @@
 
                                 @endif
 
-                                {{-- Delete hanya Admin --}}
-                                @if(auth()->user()->role == 'admin')
+                             @if(in_array(auth()->user()->role, ['admin','manager']))
 
-                                    <form
-                                        action="{{ route('products.destroy',$product->id) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+                                    @if($product->is_active)
 
-                                        @csrf
-                                        @method('DELETE')
+                                        <form
+                                            action="{{ route('products.deactivate', $product->id) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Nonaktifkan produk ini?')">
 
-                                        <button
-                                            type="submit"
-                                            class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                            @csrf
+                                            @method('PATCH')
 
-                                            Delete
+                                            <button
+                                                type="submit"
+                                                class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
 
-                                        </button>
+                                                Nonaktifkan
 
-                                    </form>
+                                            </button>
 
-                                @endif
+                                        </form>
+
+                                    @else
+
+        <form
+            action="{{ route('products.activate', $product->id) }}"
+            method="POST"
+            onsubmit="return confirm('Aktifkan kembali produk ini?')">
+
+            @csrf
+            @method('PATCH')
+
+            <button
+                type="submit"
+                class="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-emerald-700">
+
+                Aktifkan
+
+            </button>
+
+        </form>
+
+    @endif
+
+@endif
 
                             </div>
 

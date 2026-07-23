@@ -20,50 +20,101 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-public function index(\Illuminate\Http\Request $request)
-{
-    $query = Product::with(['category', 'supplier']);
+    public function index(Request $request)
+    {
+        $query = Product::with([
+            'category',
+            'supplier'
+        ]);
 
-    // Search
-    if ($request->filled('search')) {
 
-        $query->where('name', 'like', '%' . $request->search . '%');
+ /*
+|--------------------------------------------------------------------------
+| Filter Status
+|--------------------------------------------------------------------------
+*/
 
-    }
+if (in_array(auth()->user()->role, ['admin', 'manager'])) {
 
-    // Filter kategori
-    if ($request->filled('category')) {
+    $status = $request->get('status', 'all');
 
-        $query->where('category_id', $request->category);
+    if ($status == 'active') {
 
-    }
+        $query->where('is_active', true);
 
-    $products = $query
-        ->orderBy('name')
-        ->get();
+    } elseif ($status == 'inactive') {
 
-    // Semua kategori (untuk tombol filter)
-    $categories = Category::orderBy('name')->get();
-
-    // Kategori yang sedang dipilih
-    $activeCategory = null;
-
-    if ($request->filled('category')) {
-
-        $activeCategory = Category::find($request->category);
+        $query->where('is_active', false);
 
     }
 
-    // Total produk mengikuti filter
-    $totalProduct = $products->count();
+    // all = tampilkan semua
 
-    return view('pages.product.index', compact(
-        'products',
-        'categories',
-        'activeCategory',
-        'totalProduct'
-    ));
+} else {
+
+    $query->where('is_active', true);
+
 }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Search
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('search')) {
+
+            $query->where(
+                'name',
+                'like',
+                '%' . $request->search . '%'
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filter Category
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('category')) {
+
+            $query->where(
+                'category_id',
+                $request->category
+            );
+
+        }
+
+        $products = $query
+            ->orderBy('name')
+            ->get();
+
+        $categories = Category::orderBy('name')->get();
+
+        $activeCategory = null;
+
+        if ($request->filled('category')) {
+
+            $activeCategory = Category::find(
+                $request->category
+            );
+
+        }
+
+        $totalProduct = $products->count();
+
+        return view(
+            'pages.product.index',
+            compact(
+                'products',
+                'categories',
+                'activeCategory',
+                'totalProduct'
+            )
+        );
+    }
 
     public function create()
     {
@@ -183,6 +234,30 @@ public function index(\Illuminate\Http\Request $request)
         return redirect()
             ->route('products.index')
             ->with('success', 'Product updated successfully.');
+    }
+
+    public function activate(Product $product)
+    {
+        $this->productService->activate($product->id);
+
+        return redirect()
+            ->route('products.index')
+            ->with(
+                'success',
+                'Product activated successfully.'
+            );
+    }
+
+    public function deactivate(Product $product)
+    {
+        $this->productService->deactivate($product->id);
+
+        return redirect()
+            ->route('products.index')
+            ->with(
+                'success',
+                'Product deactivated successfully.'
+            );
     }
 
     public function destroy(Product $product)

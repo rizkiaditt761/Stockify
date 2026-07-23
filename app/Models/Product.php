@@ -20,6 +20,13 @@ class Product extends Model
     'stock',
     'minimum_stock',
     'image',
+    'is_active',
+    ];
+
+    protected $casts = [
+
+    'is_active' => 'boolean',
+
     ];
 
     public function category()

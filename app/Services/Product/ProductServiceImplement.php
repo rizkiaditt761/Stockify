@@ -18,5 +18,13 @@ class ProductServiceImplement extends Service implements ProductService{
       $this->mainRepository = $mainRepository;
     }
 
-    // Define your custom methods :)
+    public function activate($id)
+    {
+        return $this->mainRepository->activate($id);
+    }
+
+    public function deactivate($id)
+    {
+        return $this->mainRepository->deactivate($id);
+    }
 }

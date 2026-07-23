@@ -17,6 +17,13 @@ class StockOpnameRepositoryImplement extends Eloquent implements StockOpnameRepo
 
     public function getProducts()
     {
-        return Product::all();
+        return Product::where(function ($query) {
+
+                $query->where('is_active', true)
+                      ->orWhere('stock', '>', 0);
+
+            })
+            ->orderBy('name')
+            ->get();
     }
 }
