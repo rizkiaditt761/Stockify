@@ -22,7 +22,9 @@
     <div class="bg-white rounded-lg shadow p-6">
 
 
-        <form action="{{ route('products.store') }}" method="POST">
+        <form action="{{ route('products.store') }}" 
+        method="POST"
+        enctype="multipart/form-data">
 
             @csrf
 
@@ -259,8 +261,48 @@
 
             </div>
 
+        
 
 
+                        
+
+            {{-- Product Image --}}
+            <div class="mt-6">
+
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+
+                    Foto Produk
+
+                </label>
+
+
+                <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onchange="previewImage(event)"
+                    class="w-full rounded-lg border-gray-300 p-2.5 bg-gray-50">
+
+
+                <div class="mt-4">
+
+                    <img
+                        id="imagePreview"
+                        class="hidden w-40 h-40 object-cover rounded-xl border shadow">
+
+                </div>
+
+
+                <p class="text-xs text-gray-500 mt-2">
+
+                    Format: JPG, PNG, JPEG. Maksimal 2MB.
+
+                </p>
+
+
+            </div>
+            
+            
 
 
 
@@ -298,6 +340,8 @@
 
 
             </div>
+
+
 
 
 
@@ -416,5 +460,18 @@ category.dispatchEvent(new Event('change'));
 
 </script>
 
+function previewImage(event)
+{
 
+    const image = document.getElementById('imagePreview');
+
+
+    image.src = URL.createObjectURL(
+        event.target.files[0]
+    );
+
+
+    image.classList.remove('hidden');
+
+}
 @endsection

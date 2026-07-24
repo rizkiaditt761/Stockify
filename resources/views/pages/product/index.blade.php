@@ -117,31 +117,28 @@
     </select>
 
     {{-- Filter Status (Admin, Manager Only) --}}
-  @if(in_array(auth()->user()->role, ['admin','manager']))
+{{-- Filter Status Semua Role --}}
+<select
+    name="status"
+    onchange="this.form.submit()"
+    class="border rounded-lg px-4 py-2 w-60">
 
-        <select
-            name="status"
-            onchange="this.form.submit()"
-            class="border rounded-lg px-4 py-2 w-50">
+    <option value="all"
+    {{ request('status', 'all') == 'all' ? 'selected' : '' }}>
+        Semua
+    </option>
 
-            <option value="all"
-            {{ request('status', 'all') == 'all' ? 'selected' : '' }}>
-                Semua
-            </option>
+    <option value="active"
+    {{ request('status') == 'active' ? 'selected' : '' }}>
+        Active
+    </option>
 
-            <option value="active"
-            {{ request('status') == 'active' ? 'selected' : '' }}>
-                Active
-            </option>
+    <option value="inactive"
+    {{ request('status') == 'inactive' ? 'selected' : '' }}>
+        Inactive
+    </option>
 
-            <option value="inactive"
-            {{ request('status') == 'inactive' ? 'selected' : '' }}>
-                Inactive
-            </option>
-
-        </select>
-
-    @endif
+</select>
 
     {{-- Button --}}
     <button
@@ -191,16 +188,8 @@
                             Kategori
                         </th>
 
-                        <th class="px-6 py-4 text-left">
-                            Supplier
-                        </th>
-
                         <th class="px-6 py-4 text-center">
                             Stock
-                        </th>
-
-                        <th class="px-6 py-4 text-center">
-                            Harga
                         </th>
 
                         <th class="px-6 py-4 text-center">
@@ -223,32 +212,70 @@
 
                         <td class="px-6 py-4">
 
-                            {{ $loop->iteration }}
-
-                        </td>
-
-                      <td class="px-6 py-4">
-
-                        <div class="font-medium">
-
-                                    {{ $product->name }}
-
-                                </div>
-
-                                
-                            </td>
-
-                        <td class="px-6 py-4">
-
-                            {{ $product->category->name }}
+                            {{ $products->firstItem() + $loop->index }}
 
                         </td>
 
                         <td class="px-6 py-4">
 
-                            {{ $product->supplier->name }}
+    <div class="flex items-center gap-4">
 
-                        </td>
+        @if($product->image)
+
+            <img
+                src="{{ asset('storage/'.$product->image) }}"
+                class="w-14 h-14 rounded-xl object-cover border">
+
+        @else
+
+            <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-7 h-7 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M4 16l4-4a3 3 0 014 0l4 4m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+
+                </svg>
+
+            </div>
+
+        @endif
+
+        <div>
+
+            <div class="font-semibold text-gray-800">
+
+                {{ $product->name }}
+
+            </div>
+
+            <div class="text-xs text-gray-500 mt-1">
+
+                SKU :
+                {{ $product->sku }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</td>
+
+<td class="px-6 py-4">
+
+    {{ $product->category->name }}
+
+</td>
+
+  
 
                         <td class="px-6 py-4 text-center">
 
@@ -274,11 +301,7 @@
 
                         </td>
 
-                        <td class="px-6 py-4 text-center">
 
-                            Rp {{ number_format($product->selling_price,0,',','.') }}
-
-                        </td>
 
                         <td class="px-6 py-4 text-center">
 
@@ -395,11 +418,50 @@
 
                 </tbody>
 
-            </table>
+           </table>
+
+</div>
+
+{{-- Pagination --}}
+@if($products->hasPages())
+
+<div class="border-t bg-white px-6 py-4">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div class="text-sm text-gray-600">
+
+            Menampilkan
+
+            <span class="font-semibold text-blue-600">
+                {{ $products->firstItem() }}
+            </span>
+
+            -
+
+            <span class="font-semibold text-blue-600">
+                {{ $products->lastItem() }}
+            </span>
+
+            dari
+
+            <span class="font-semibold text-blue-600">
+                {{ $products->total() }}
+            </span>
+
+            produk
 
         </div>
 
+        {{ $products->links() }}
+
     </div>
+
+</div>
+
+@endif
+
+</div>
 
 </div>
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 use App\Http\Requests\CategoryRequest;
 use App\Services\Category\CategoryService;
 use App\Services\Activity\ActivityService;
@@ -24,15 +26,29 @@ class CategoryController extends Controller
     }
 
 
-    public function index()
-    {
-        $categories = $this->categoryService->all();
+    public function index(Request $request)
+{
+   $query = Category::withCount([
+    'products',
+    'categoryAttributes',
+]);
 
-        return view(
-            'pages.category.index',
-            compact('categories')
-        );
-    }
+if ($request->filled('search')) {
+    $query->where('name', 'like', '%' . $request->search . '%');
+}
+
+$totalCategory = Category::count();
+
+$categories = $query
+    ->orderBy('name')
+    ->paginate(10)
+    ->withQueryString();
+
+return view('pages.category.index', compact(
+    'categories',
+    'totalCategory'
+));
+}
 
 
     public function create()

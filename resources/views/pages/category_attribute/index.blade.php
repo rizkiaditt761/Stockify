@@ -4,223 +4,215 @@
 
 <div class="p-4">
 
-
     {{-- Header --}}
-    <div class="mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
 
-        <h1 class="text-2xl font-bold text-gray-800">
-            Kelola Atribut Kategori
-        </h1>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">
+                Kelola Atribut Kategori
+            </h1>
 
-        <p class="text-sm text-gray-500 mt-1">
-            Atur atribut khusus untuk kategori {{ $category->name }}
-        </p>
+            <p class="text-sm text-gray-500 mt-1">
+                Atur atribut untuk kategori
+                <span class="font-semibold text-blue-700">
+                    {{ $category->name }}
+                </span>
+            </p>
+        </div>
+
+        <a href="{{ route('categories.index') }}"
+            class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            ← Kembali
+        </a>
 
     </div>
-
 
 
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
-
-
-        {{-- Category Info --}}
-        <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-
-
-            <p class="text-sm text-gray-500">
-                Kategori
-            </p>
-
-
-            <h2 class="text-lg font-semibold text-blue-700">
-                {{ $category->name }}
-            </h2>
-
-
-        </div>
-
-
-
-
-
-        {{-- Success Alert --}}
         @if(session('success'))
-
-        <div class="mb-5 p-4 text-sm text-green-800 bg-green-100 rounded-lg">
-
-            {{ session('success') }}
-
-        </div>
-
+            <div class="mb-6 rounded-lg bg-green-100 border border-green-200 p-4 text-green-700">
+                {{ session('success') }}
+            </div>
         @endif
 
 
 
+        {{-- Info --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+
+            <div class="rounded-xl border border-blue-200 bg-blue-50 p-5">
+
+                <p class="text-sm text-gray-500">
+                    Nama Kategori
+                </p>
+
+                <h2 class="mt-2 text-xl font-bold text-blue-700">
+                    {{ $category->name }}
+                </h2>
+
+            </div>
+
+            <div class="rounded-xl border border-indigo-200 bg-indigo-50 p-5">
+
+                <p class="text-sm text-gray-500">
+                    Total Atribut
+                </p>
+
+                <h2 class="mt-2 text-xl font-bold text-indigo-700">
+                    {{ $attributes->count() }}
+                </h2>
+
+            </div>
+
+        </div>
 
 
-        <form action="{{ route('category.attributes.store', $category->id) }}"
-              method="POST">
 
+        <form action="{{ route('category.attributes.store',$category->id) }}"
+            method="POST">
 
             @csrf
 
 
 
-            <div id="attributes">
-
-
+            <div id="attributes" class="space-y-4">
 
                 @if($attributes->count())
 
-
                     @foreach($attributes as $attribute)
 
+                        <div class="attribute-item flex gap-3">
 
-                    <div class="flex gap-3 mb-3">
+                            <input
+                                type="text"
+                                name="attributes[]"
+                                value="{{ $attribute->name }}"
+                                placeholder="Nama atribut"
+                                class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
 
+                            <button
+                                type="button"
+                                class="remove-btn px-4 rounded-lg bg-red-100 text-red-600 hover:bg-red-200">
 
-                        <input
-                            type="text"
-                            name="attributes[]"
-                            value="{{ $attribute->name }}"
-                            class="w-full rounded-lg border-gray-300
-                            focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Contoh: Processor, RAM, Warna">
+                                Hapus
 
+                            </button>
 
-                    </div>
-
+                        </div>
 
                     @endforeach
 
-
-
                 @else
 
-
-
-                    <div class="flex gap-3 mb-3">
-
+                    <div class="attribute-item flex gap-3">
 
                         <input
                             type="text"
                             name="attributes[]"
-                            class="w-full rounded-lg border-gray-300
-                            focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Nama atribut">
+                            placeholder="Contoh : Processor"
+                            class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
 
+                        <button
+                            type="button"
+                            class="remove-btn px-4 rounded-lg bg-red-100 text-red-600 hover:bg-red-200">
+
+                            Hapus
+
+                        </button>
 
                     </div>
 
-
-
                 @endif
-
-
 
             </div>
 
 
 
-
-
-            {{-- Add Attribute --}}
-            <button
-                type="button"
-                onclick="addAttribute()"
-                class="mb-6 px-4 py-2 text-sm font-medium
-                text-green-700 bg-green-100 rounded-lg
-                hover:bg-green-200">
-
-
-                + Tambah Atribut
-
-
-            </button>
-
-
-
-
-
-
-            {{-- Action --}}
-            <div class="flex gap-3">
-
+            <div class="flex flex-wrap gap-3 mt-8">
 
                 <button
-                    type="submit"
-                    class="px-5 py-2.5 text-sm font-medium
-                    text-white bg-blue-700 rounded-lg
-                    hover:bg-blue-800
-                    focus:ring-4 focus:ring-blue-300">
+                    id="add-attribute"
+                    type="button"
+                    class="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700">
 
-
-                    Simpan Atribut
-
+                    + Tambah Atribut
 
                 </button>
 
+                <button
+                    type="submit"
+                    class="px-5 py-2.5 bg-blue-700 text-white rounded-lg hover:bg-blue-800">
 
+                    Simpan Atribut
 
-
-                <a href="{{ route('categories.index') }}"
-                    class="px-5 py-2.5 text-sm font-medium
-                    text-gray-700 bg-gray-200 rounded-lg
-                    hover:bg-gray-300">
-
-
-                    Kembali
-
-
-                </a>
-
+                </button>
 
             </div>
 
-
-
         </form>
 
-
     </div>
-
 
 </div>
 
 
 
-
 <script>
 
-function addAttribute(){
+document.addEventListener('DOMContentLoaded', function () {
+
+    const container = document.getElementById('attributes');
+
+    document.getElementById('add-attribute').addEventListener('click', function () {
+
+        container.insertAdjacentHTML('beforeend', `
+            <div class="attribute-item flex gap-3">
+
+                <input
+                    type="text"
+                    name="attributes[]"
+                    placeholder="Nama atribut"
+                    class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+
+                <button
+                    type="button"
+                    class="remove-btn px-4 rounded-lg bg-red-100 text-red-600 hover:bg-red-200">
+
+                    Hapus
+
+                </button>
+
+            </div>
+        `);
+
+    });
 
 
-    document.getElementById('attributes')
-    .insertAdjacentHTML(
-        'beforeend',
 
-        `
-        <div class="flex gap-3 mb-3">
+    container.addEventListener('click', function(e){
 
+        if(!e.target.classList.contains('remove-btn')) return;
 
-            <input
-                type="text"
-                name="attributes[]"
-                class="w-full rounded-lg border-gray-300
-                focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Nama atribut">
+        const items = container.querySelectorAll('.attribute-item');
 
+        const row = e.target.closest('.attribute-item');
 
-        </div>
-        `
-    );
+        if(items.length > 1){
 
+            row.remove();
 
-}
+        }else{
+
+            row.querySelector('input').value = '';
+
+        }
+
+    });
+
+});
 
 </script>
-
 
 @endsection

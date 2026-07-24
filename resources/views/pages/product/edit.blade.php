@@ -24,7 +24,9 @@
 
 
 
-        <form action="{{ route('products.update', $product->id) }}" method="POST">
+        <form action="{{ route('products.update', $product->id) }}" 
+      method="POST"
+      enctype="multipart/form-data">
 
 
             @csrf
@@ -323,7 +325,89 @@
 
 
 
+            {{-- Product Image --}}
 
+<div class="mt-6">
+
+
+    <label class="block mb-2 text-sm font-medium text-gray-700">
+
+        Foto Produk
+
+    </label>
+
+
+
+
+    {{-- Current Image --}}
+
+    @if($product->image)
+
+        <div class="mb-4">
+
+            <p class="text-sm text-gray-500 mb-2">
+
+                Foto Saat Ini
+
+            </p>
+
+
+            <img
+                src="{{ asset('storage/'.$product->image) }}"
+                class="w-40 h-40 object-cover rounded-xl border shadow">
+
+
+        </div>
+
+    @endif
+
+
+
+
+
+    {{-- Upload New Image --}}
+
+    <input
+        type="file"
+        name="image"
+        accept="image/*"
+        onchange="previewImage(event)"
+        class="w-full rounded-lg border-gray-300 p-2.5 bg-gray-50">
+
+
+
+
+
+    {{-- Preview New Image --}}
+
+    <div class="mt-4">
+
+
+        <p class="text-sm text-gray-500 mb-2">
+
+            Preview Foto Baru
+
+        </p>
+
+
+        <img
+            id="imagePreview"
+            class="hidden w-40 h-40 object-cover rounded-xl border shadow">
+
+
+    </div>
+
+
+
+
+    <p class="text-xs text-gray-500 mt-2">
+
+        Kosongkan jika tidak ingin mengganti foto.
+
+    </p>
+
+
+</div>
 
 
 
@@ -467,6 +551,21 @@ document
 loadAttributes(
     document.getElementById('category').value
 );
+
+function previewImage(event)
+{
+
+    const image = document.getElementById('imagePreview');
+
+
+    image.src = URL.createObjectURL(
+        event.target.files[0]
+    );
+
+
+    image.classList.remove('hidden');
+
+}
 
 
 

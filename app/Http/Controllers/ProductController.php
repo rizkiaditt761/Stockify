@@ -11,6 +11,7 @@ use App\Services\Activity\ActivityService;
 use App\Models\ProductAttribute;
 use App\Models\StockTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -37,23 +38,16 @@ class ProductController extends Controller
         ]);
 
 
-        if (in_array(auth()->user()->role, ['admin', 'manager'])) {
+        $status = $request->get('status', 'all');
 
-            $status = $request->get('status', 'all');
 
-            if ($status == 'active') {
-
-                $query->where('is_active', true);
-
-            } elseif ($status == 'inactive') {
-
-                $query->where('is_active', false);
-
-            }
-
-        } else {
+        if ($status == 'active') {
 
             $query->where('is_active', true);
+
+        } elseif ($status == 'inactive') {
+
+            $query->where('is_active', false);
 
         }
 
@@ -81,7 +75,8 @@ class ProductController extends Controller
 
         $products = $query
             ->orderBy('name')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
 
         $categories = Category::orderBy('name')->get();
@@ -99,7 +94,7 @@ class ProductController extends Controller
         }
 
 
-        $totalProduct = $products->count();
+        $totalProduct = $products->total();
 
 
         return view(
@@ -134,12 +129,32 @@ class ProductController extends Controller
 
 
 
-    public function store(ProductRequest $request)
-    {
+public function store(ProductRequest $request)
+{
 
-        $product = Product::create(
-            $request->validated()
-        );
+    $data = $request->validated();
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upload Product Image
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->hasFile('image')) {
+
+
+        $data['image'] =
+            $request->file('image')
+            ->store('products', 'public');
+
+
+    }
+
+
+
+    $product = Product::create($data);
 
 
         if ($request->has('attributes')) {
@@ -281,82 +296,149 @@ class ProductController extends Controller
 
 
 
-    public function update(
-        ProductRequest $request,
-        Product $product
-    )
-    {
+   public function update(
+    ProductRequest $request,
+    Product $product
+)
+{
 
-        $product->update(
-            $request->validated()
-        );
-
-
-        $product->attributes()->delete();
-
-
-        $attributes = $request->input(
-            'attributes',
-            []
-        );
-
-
-        $category = Category::with('categoryAttributes')
-            ->findOrFail(
-                $request->category_id
-            );
+    $data = $request->validated();
 
 
 
-        foreach ($category->categoryAttributes as $attribute) {
+    /*
+    |--------------------------------------------------------------------------
+    | Update Product Image
+    |--------------------------------------------------------------------------
+    */
 
 
-            if (!empty($attributes[$attribute->id])) {
+    if ($request->hasFile('image')) {
 
 
-                ProductAttribute::create([
+        // Hapus gambar lama
 
-                    'product_id' => $product->id,
+        if ($product->image && \Storage::disk('public')->exists($product->image)) {
 
-                    'name'       => $attribute->name,
 
-                    'value'      => $attributes[$attribute->id],
-
-                ]);
-
-            }
+            \Storage::disk('public')
+                ->delete($product->image);
 
         }
 
 
 
-        // ACTIVITY LOG UPDATE PRODUCT
+        // Upload gambar baru
 
-        $this->activityService->log(
-
-            'Product',
-
-            'UPDATE',
-
-            'Mengubah data produk ' . $product->name,
-
-            $product
-
-        );
-
-
-
-        return redirect()
-
-            ->route('products.index')
-
-            ->with(
-                'success',
-                'Product updated successfully.'
+        $data['image'] = $request
+            ->file('image')
+            ->store(
+                'products',
+                'public'
             );
 
     }
 
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Product
+    |--------------------------------------------------------------------------
+    */
+
+
+    $product->update($data);
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Attributes
+    |--------------------------------------------------------------------------
+    */
+
+
+    $product->attributes()->delete();
+
+
+
+    $attributes = $request->input(
+        'attributes',
+        []
+    );
+
+
+
+    $category = Category::with('categoryAttributes')
+        ->findOrFail(
+            $request->category_id
+        );
+
+
+
+
+    foreach ($category->categoryAttributes as $attribute) {
+
+
+        if (!empty($attributes[$attribute->id])) {
+
+
+            ProductAttribute::create([
+
+                'product_id' => $product->id,
+
+                'name'       => $attribute->name,
+
+                'value'      => $attributes[$attribute->id],
+
+            ]);
+
+        }
+
+    }
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
+
+
+    $this->activityService->log(
+
+        'Product',
+
+        'UPDATE',
+
+        'Mengubah data produk '.$product->name,
+
+        $product
+
+    );
+
+
+
+
+
+    return redirect()
+
+        ->route('products.index')
+
+        ->with(
+            'success',
+            'Product updated successfully.'
+        );
+
+}
 
 
 
@@ -435,11 +517,23 @@ class ProductController extends Controller
 
 
 
-    public function destroy(Product $product)
-    {
+public function destroy(Product $product)
+{
 
-        $this->productService
-            ->delete($product->id);
+
+    if ($product->image) {
+
+
+        Storage::disk('public')
+            ->delete($product->image);
+
+
+    }
+
+
+
+    $this->productService
+        ->delete($product->id);
 
 
 
