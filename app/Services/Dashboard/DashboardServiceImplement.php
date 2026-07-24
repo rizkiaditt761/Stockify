@@ -9,10 +9,17 @@ class DashboardServiceImplement extends Service implements DashboardService
 {
     protected $mainRepository;
 
-    public function __construct(DashboardRepository $mainRepository)
-    {
+    public function __construct(
+        DashboardRepository $mainRepository
+    ) {
         $this->mainRepository = $mainRepository;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard Data
+    |--------------------------------------------------------------------------
+    */
 
     public function getDashboardData()
     {
