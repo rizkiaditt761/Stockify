@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class UserServiceImplement extends Service implements UserService
 {
     /**
-     * Jangan ubah nama variabel ini.
+     * jangan ubah nama variabel ini
      */
     protected $mainRepository;
 
@@ -37,15 +37,20 @@ class UserServiceImplement extends Service implements UserService
 
     public function updateUser($id, $data)
     {
-        // Kalau password dikosongkan saat edit,
-        // password lama tetap digunakan.
         if (empty($data['password'])) {
+
             unset($data['password']);
+
         } else {
+
             $data['password'] = Hash::make($data['password']);
+
         }
 
-        return $this->mainRepository->updateUser($id, $data);
+        return $this->mainRepository->updateUser(
+            $id,
+            $data
+        );
     }
 
     public function deleteUser($id)

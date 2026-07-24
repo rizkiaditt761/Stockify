@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Services\User\UserService;
+use App\Services\Activity\ActivityService;
 
 class UserController extends Controller
 {
     protected UserService $userService;
+    protected ActivityService $activityService;
 
-    public function __construct(UserService $userService)
-    {
+    public function __construct(
+        UserService $userService,
+        ActivityService $activityService
+    ) {
         $this->userService = $userService;
+        $this->activityService = $activityService;
     }
 
     /**
@@ -21,7 +26,10 @@ class UserController extends Controller
     {
         $users = $this->userService->getAllUsers();
 
-        return view('pages.user.index', compact('users'));
+        return view(
+            'pages.user.index',
+            compact('users')
+        );
     }
 
     /**
@@ -37,13 +45,28 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $this->userService->createUser(
+        $user = $this->userService->createUser(
             $request->validated()
+        );
+
+        $this->activityService->log(
+
+            'User',
+
+            'CREATE',
+
+            'Menambahkan user ' . $user->name,
+
+            $user
+
         );
 
         return redirect()
             ->route('users.index')
-            ->with('success', 'User berhasil ditambahkan.');
+            ->with(
+                'success',
+                'User berhasil ditambahkan.'
+            );
     }
 
     /**
@@ -70,16 +93,33 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, string $id)
-    {
-        $this->userService->updateUser(
+    public function update(
+        UserRequest $request,
+        string $id
+    ) {
+        $user = $this->userService->updateUser(
             $id,
             $request->validated()
         );
 
+        $this->activityService->log(
+
+            'User',
+
+            'UPDATE',
+
+            'Mengubah data user ' . $user->name,
+
+            $user
+
+        );
+
         return redirect()
             ->route('users.index')
-            ->with('success', 'User berhasil diperbarui.');
+            ->with(
+                'success',
+                'User berhasil diperbarui.'
+            );
     }
 
     /**
@@ -87,10 +127,27 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        $user = $this->userService->findById($id);
+
         $this->userService->deleteUser($id);
+
+        $this->activityService->log(
+
+            'User',
+
+            'DELETE',
+
+            'Menghapus user ' . $user->name,
+
+            $user
+
+        );
 
         return redirect()
             ->route('users.index')
-            ->with('success', 'User berhasil dihapus.');
+            ->with(
+                'success',
+                'User berhasil dihapus.'
+            );
     }
 }

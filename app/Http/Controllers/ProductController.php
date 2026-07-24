@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Supplier;
 use App\Http\Requests\ProductRequest;
 use App\Services\Product\ProductService;
+use App\Services\Activity\ActivityService;
 use App\Models\ProductAttribute;
 use App\Models\StockTransaction;
 use Illuminate\Http\Request;
@@ -15,10 +16,18 @@ class ProductController extends Controller
 {
     protected ProductService $productService;
 
-    public function __construct(ProductService $productService)
-    {
+    protected ActivityService $activityService;
+
+
+    public function __construct(
+        ProductService $productService,
+        ActivityService $activityService
+    ) {
         $this->productService = $productService;
+
+        $this->activityService = $activityService;
     }
+
 
     public function index(Request $request)
     {
@@ -28,39 +37,26 @@ class ProductController extends Controller
         ]);
 
 
- /*
-|--------------------------------------------------------------------------
-| Filter Status
-|--------------------------------------------------------------------------
-*/
+        if (in_array(auth()->user()->role, ['admin', 'manager'])) {
 
-if (in_array(auth()->user()->role, ['admin', 'manager'])) {
+            $status = $request->get('status', 'all');
 
-    $status = $request->get('status', 'all');
+            if ($status == 'active') {
 
-    if ($status == 'active') {
+                $query->where('is_active', true);
 
-        $query->where('is_active', true);
+            } elseif ($status == 'inactive') {
 
-    } elseif ($status == 'inactive') {
+                $query->where('is_active', false);
 
-        $query->where('is_active', false);
+            }
 
-    }
+        } else {
 
-    // all = tampilkan semua
+            $query->where('is_active', true);
 
-} else {
+        }
 
-    $query->where('is_active', true);
-
-}
-
-        /*
-        |--------------------------------------------------------------------------
-        | Search
-        |--------------------------------------------------------------------------
-        */
 
         if ($request->filled('search')) {
 
@@ -72,11 +68,6 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
 
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Category
-        |--------------------------------------------------------------------------
-        */
 
         if ($request->filled('category')) {
 
@@ -87,13 +78,17 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
 
         }
 
+
         $products = $query
             ->orderBy('name')
             ->get();
 
+
         $categories = Category::orderBy('name')->get();
 
+
         $activeCategory = null;
+
 
         if ($request->filled('category')) {
 
@@ -103,7 +98,9 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
 
         }
 
+
         $totalProduct = $products->count();
+
 
         return view(
             'pages.product.index',
@@ -116,38 +113,62 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
         );
     }
 
+
+
     public function create()
     {
         $categories = Category::all();
+
         $suppliers = Supplier::all();
 
-        return view('pages.product.create', compact(
-            'categories',
-            'suppliers'
-        ));
+
+        return view(
+            'pages.product.create',
+            compact(
+                'categories',
+                'suppliers'
+            )
+        );
     }
+
+
+
 
     public function store(ProductRequest $request)
     {
-        // Simpan produk
-        $product = Product::create($request->validated());
 
-        // Simpan atribut produk
+        $product = Product::create(
+            $request->validated()
+        );
+
+
         if ($request->has('attributes')) {
+
 
             $category = Category::with('categoryAttributes')
                 ->findOrFail($request->category_id);
 
-            $attributes = $request->input('attributes', []);
+
+            $attributes = $request->input(
+                'attributes',
+                []
+            );
+
 
             foreach ($category->categoryAttributes as $attribute) {
 
+
                 if (!empty($attributes[$attribute->id])) {
 
+
                     ProductAttribute::create([
+
                         'product_id' => $product->id,
+
                         'name'       => $attribute->name,
+
                         'value'      => $attributes[$attribute->id],
+
                     ]);
 
                 }
@@ -156,27 +177,67 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
 
         }
 
-        // Otomatis buat transaksi Initial Stock
+
+
         if ($product->stock > 0) {
 
+
             StockTransaction::create([
+
                 'product_id'       => $product->id,
+
                 'user_id'          => auth()->id(),
+
                 'type'             => 'IN',
+
                 'quantity'         => $product->stock,
+
                 'stock_before'     => 0,
+
                 'stock_after'      => $product->stock,
+
                 'transaction_date' => now(),
+
                 'status'           => 'Completed',
+
                 'notes'            => 'Initial Stock',
+
             ]);
 
         }
 
+
+
+        // ACTIVITY LOG CREATE PRODUCT
+
+        $this->activityService->log(
+
+            'Product',
+
+            'CREATE',
+
+            'Membuat produk ' . $product->name,
+
+            $product
+
+        );
+
+
+
         return redirect()
+
             ->route('products.index')
-            ->with('success', 'Product successfully created.');
+
+            ->with(
+                'success',
+                'Product successfully created.'
+            );
+
     }
+
+
+
+
 
     public function show(Product $product)
     {
@@ -186,15 +247,25 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
             'attributes'
         ]);
 
-        return view('pages.product.show', compact('product'));
+
+        return view(
+            'pages.product.show',
+            compact('product')
+        );
     }
+
+
+
 
     public function edit(Product $product)
     {
         $product->load('attributes');
 
+
         $categories = Category::all();
+
         $suppliers = Supplier::all();
+
 
         return view(
             'pages.product.edit',
@@ -206,66 +277,194 @@ if (in_array(auth()->user()->role, ['admin', 'manager'])) {
         );
     }
 
-    public function update(ProductRequest $request, Product $product)
+
+
+
+
+    public function update(
+        ProductRequest $request,
+        Product $product
+    )
     {
-        $product->update($request->validated());
+
+        $product->update(
+            $request->validated()
+        );
+
 
         $product->attributes()->delete();
 
-        $attributes = $request->input('attributes', []);
+
+        $attributes = $request->input(
+            'attributes',
+            []
+        );
+
 
         $category = Category::with('categoryAttributes')
-            ->findOrFail($request->category_id);
+            ->findOrFail(
+                $request->category_id
+            );
+
+
 
         foreach ($category->categoryAttributes as $attribute) {
 
+
             if (!empty($attributes[$attribute->id])) {
 
+
                 ProductAttribute::create([
+
                     'product_id' => $product->id,
+
                     'name'       => $attribute->name,
+
                     'value'      => $attributes[$attribute->id],
+
                 ]);
 
             }
 
         }
 
+
+
+        // ACTIVITY LOG UPDATE PRODUCT
+
+        $this->activityService->log(
+
+            'Product',
+
+            'UPDATE',
+
+            'Mengubah data produk ' . $product->name,
+
+            $product
+
+        );
+
+
+
         return redirect()
+
             ->route('products.index')
-            ->with('success', 'Product updated successfully.');
+
+            ->with(
+                'success',
+                'Product updated successfully.'
+            );
+
     }
+
+
+
+
 
     public function activate(Product $product)
     {
-        $this->productService->activate($product->id);
+
+        $this->productService
+            ->activate($product->id);
+
+
+
+        $this->activityService->log(
+
+            'Product',
+
+            'ACTIVATE',
+
+            'Mengaktifkan produk ' . $product->name,
+
+            $product
+
+        );
+
+
 
         return redirect()
+
             ->route('products.index')
+
             ->with(
                 'success',
                 'Product activated successfully.'
             );
+
     }
+
+
+
+
 
     public function deactivate(Product $product)
     {
-        $this->productService->deactivate($product->id);
+
+        $this->productService
+            ->deactivate($product->id);
+
+
+
+        $this->activityService->log(
+
+            'Product',
+
+            'DEACTIVATE',
+
+            'Menonaktifkan produk ' . $product->name,
+
+            $product
+
+        );
+
+
 
         return redirect()
+
             ->route('products.index')
+
             ->with(
                 'success',
                 'Product deactivated successfully.'
             );
+
     }
+
+
+
+
 
     public function destroy(Product $product)
     {
-        $this->productService->delete($product->id);
+
+        $this->productService
+            ->delete($product->id);
+
+
+
+        $this->activityService->log(
+
+            'Product',
+
+            'DELETE',
+
+            'Menghapus produk ' . $product->name,
+
+            $product
+
+        );
+
+
 
         return redirect()
+
             ->route('products.index')
-            ->with('success', 'Product deleted successfully.');
+
+            ->with(
+                'success',
+                'Product deleted successfully.'
+            );
+
     }
 }

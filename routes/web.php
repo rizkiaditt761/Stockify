@@ -15,7 +15,21 @@ use App\Http\Controllers\StockMonitoringController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActivityController;
 
+
+
+
+Route::middleware('role:admin,manager,staff')->group(function () {
+
+
+    Route::get(
+        '/activities',
+        [ActivityController::class,'index']
+    )->name('activities.index');
+
+
+});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +42,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
 
+    
     /*
     |--------------------------------------------------------------------------
     | Dashboard
@@ -38,6 +53,18 @@ Route::middleware(['auth'])->group(function () {
         '/dashboard',
         [DashboardController::class, 'index']
     )->name('dashboard');
+
+    /*
+|--------------------------------------------------------------------------
+| Activity Log
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/activities',
+    [ActivityController::class,'index']
+)
+->name('activities.index');
 
     /*
     |--------------------------------------------------------------------------

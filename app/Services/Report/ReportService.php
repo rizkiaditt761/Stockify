@@ -6,5 +6,5 @@ use LaravelEasyRepository\BaseService;
 
 interface ReportService extends BaseService
 {
-    public function getDashboardData($startDate = null, $endDate = null);
+    public function getReportData(array $filters);
 }

@@ -247,6 +247,41 @@
 
         @endif
 
+        @if(in_array(auth()->user()->role, ['admin','manager','staff']))
+
+        <li>
+
+            <a href="{{ route('activities.index') }}"
+                class="flex items-center gap-3 p-3 rounded-lg transition-all duration-200
+                {{ request()->routeIs('activities.*')
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100 hover:translate-x-1'
+                }}">
+
+                <svg class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M9 17v-6h4v6m4 0V7M5 17V9"/>
+
+                </svg>
+
+                <span class="font-medium">
+                    Aktifitas Saya
+                </span>
+
+            </a>
+
+        </li>
+
+        @endif
+
+        
+
         {{-- Users --}}
         @if(auth()->user()->role == 'admin')
 

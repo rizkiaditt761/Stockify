@@ -47,6 +47,8 @@ class UserRepositoryImplement extends Eloquent implements UserRepository
     {
         $user = $this->findById($id);
 
-        return $user->delete();
+        $user->delete();
+
+        return $user;
     }
 }

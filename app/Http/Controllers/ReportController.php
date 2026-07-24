@@ -8,54 +8,96 @@ use App\Services\Report\ReportService;
 
 class ReportController extends Controller
 {
-    protected $reportService;
+    protected ReportService $reportService;
 
-    public function __construct(ReportService $reportService)
-    {
+    public function __construct(
+        ReportService $reportService
+    ) {
         $this->reportService = $reportService;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Report
+    |--------------------------------------------------------------------------
+    */
+
     public function index(Request $request)
     {
-        $startDate = $request->start_date;
-        $endDate   = $request->end_date;
+        $filters = [
 
-        $type = $request->type ?? 'all';
+            'report'      => $request->report ?? 'stock',
 
-        $data = $this->reportService->getDashboardData(
-            $startDate,
-            $endDate
-        );
+            'type'        => $request->type ?? 'all',
 
-        $data['type'] = $type;
-        $data['startDate'] = $startDate;
-        $data['endDate'] = $endDate;
+            'category_id' => $request->category_id,
+
+            'start_date'  => $request->start_date,
+
+            'end_date'    => $request->end_date,
+
+            // BARU
+            'search'      => $request->search,
+
+        ];
+
+        $data = $this->reportService
+            ->getReportData($filters);
 
         return view(
-            'pages.report.index',
-            $data
-        );
+    'pages.report.index',
+    array_merge(
+        $data,
+        $filters,
+        [
+            'selectedReport' => $filters['report']
+        ]
+    )
+);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Export PDF
+    |--------------------------------------------------------------------------
+    */
 
     public function exportPdf(Request $request)
     {
-        $startDate = $request->start_date;
-        $endDate   = $request->end_date;
-        $type      = $request->type ?? 'all';
+        $filters = [
 
-        $data = $this->reportService->getDashboardData(
-            $startDate,
-            $endDate
-        );
+            'report'      => $request->report ?? 'stock',
 
-        $data['type'] = $type;
-        $data['startDate'] = $startDate;
-        $data['endDate'] = $endDate;
+            'type'        => $request->type ?? 'all',
+
+            'category_id' => $request->category_id,
+
+            'start_date'  => $request->start_date,
+
+            'end_date'    => $request->end_date,
+
+            // BARU
+            'search'      => $request->search,
+
+        ];
+
+        $data = $this->reportService
+            ->getReportData($filters);
 
         $pdf = Pdf::loadView(
-            'pages.report.pdf',
-            $data
-        )->setPaper('a4', 'landscape');
+    'pages.report.pdf',
+    array_merge(
+        $data,
+        $filters,
+        [
+            'selectedReport' => $filters['report']
+        ]
+    )
+)
+        ->setPaper(
+            'a4',
+            'landscape'
+        );
 
         return $pdf->download(
             'Stockify_Report_' .

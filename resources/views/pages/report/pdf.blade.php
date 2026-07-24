@@ -9,42 +9,64 @@
         Stockify Report
     </title>
 
+
     <style>
 
         body{
+
             font-family: DejaVu Sans, sans-serif;
             font-size:12px;
+
         }
+
 
         h1,h2,h3{
+
             margin:0;
+
         }
+
 
         h1{
+
             text-align:center;
             margin-bottom:8px;
+
         }
+
 
         p{
+
             margin:4px 0 15px;
+
         }
 
+
         table{
+
             width:100%;
             border-collapse:collapse;
             margin-bottom:25px;
+
         }
 
+
         th{
+
             border:1px solid #000;
             padding:6px;
             background:#eeeeee;
+
         }
 
+
         td{
+
             border:1px solid #000;
             padding:6px;
+
         }
+
 
         .summary{
 
@@ -53,6 +75,7 @@
 
         }
 
+
         .summary td{
 
             border:1px solid #444;
@@ -60,11 +83,15 @@
 
         }
 
+
     </style>
+
 
 </head>
 
+
 <body>
+
 
 <h1>
 
@@ -72,379 +99,947 @@
 
 </h1>
 
+
+
 <p>
 
     Printed :
+
     {{ now()->format('d M Y H:i') }}
+
 
     <br>
 
-    Report :
-    {{ ucfirst($type) }}
 
-    @if($startDate && $endDate)
+    Report :
+
+    {{ ucfirst($report) }}
+
+
+
+    @if(!empty($start_date) && !empty($end_date))
+
 
         <br>
 
+
         Period :
-        {{ $startDate }}
+
+        {{ $start_date }}
+
         -
-        {{ $endDate }}
+
+        {{ $end_date }}
+
 
     @endif
 
+
 </p>
+
+
+
+
+
+{{-- ================================================= --}}
+{{-- SUMMARY --}}
+{{-- ================================================= --}}
+
+
 
 <table class="summary">
 
+
+
+@if($report == 'stock')
+
+
+
 <tr>
 
+
 <td>
+
 Total Product
+
 </td>
 
-<td>
-{{ $summary['total_products'] }}
-</td>
 
 <td>
-Total Supplier
+
+{{ $summary['total_products'] ?? 0 }}
+
 </td>
 
-<td>
-{{ $summary['total_suppliers'] }}
-</td>
+
 
 <td>
-Total User
+
+Total Stock
+
 </td>
 
+
 <td>
-{{ $summary['total_users'] }}
+
+{{ $summary['total_stock'] ?? 0 }}
+
 </td>
+
+
 
 </tr>
+
+
+
+@endif
+
+
+
+
+
+@if($report == 'transaction')
+
+
 
 <tr>
 
-<td>
-Stock In
-</td>
 
 <td>
-{{ $summary['stock_in'] }}
+
+Total Transaction
+
 </td>
 
-<td>
-Stock Out
-</td>
 
 <td>
-{{ $summary['stock_out'] }}
+
+{{ $summary['total_transaction'] ?? 0 }}
+
 </td>
 
-<td>
-Stock Opname
-</td>
+
 
 <td>
-{{ $summary['stock_opname'] }}
+
+Barang Masuk
+
 </td>
+
+
+<td>
+
+{{ $summary['stock_in'] ?? 0 }}
+
+</td>
+
+
+
+<td>
+
+Barang Keluar
+
+</td>
+
+
+<td>
+
+{{ $summary['stock_out'] ?? 0 }}
+
+</td>
+
+
 
 </tr>
+
+
+
+@endif
+
+
+
+
+
+
+@if($report == 'activity')
+
+
+
+<tr>
+
+
+<td>
+
+Total Activity
+
+</td>
+
+
+<td>
+
+{{ $summary['total_activity'] ?? 0 }}
+
+</td>
+
+
+
+<td>
+
+User Aktif
+
+</td>
+
+
+<td>
+
+{{ $summary['total_user'] ?? 0 }}
+
+</td>
+
+
+
+</tr>
+
+
+
+@endif
+
+
+
+
+
+@if($report == 'all')
+
+
+
+<tr>
+
+
+<td>
+
+Total Product
+
+</td>
+
+
+<td>
+
+{{ $summary['total_products'] ?? 0 }}
+
+</td>
+
+
+
+<td>
+
+Total Stock
+
+</td>
+
+
+<td>
+
+{{ $summary['total_stock'] ?? 0 }}
+
+</td>
+
+
+
+<td>
+
+Total Transaction
+
+</td>
+
+
+<td>
+
+{{ $summary['total_transaction'] ?? 0 }}
+
+</td>
+
+
+
+</tr>
+
+
+
+<tr>
+
+
+<td>
+
+Total Activity
+
+</td>
+
+
+<td>
+
+{{ $summary['total_activity'] ?? 0 }}
+
+</td>
+
+
+
+</tr>
+
+
+
+@endif
+
+
 
 </table>
+{{-- ================================================= --}}
+{{-- PRODUCT STOCK REPORT --}}
+{{-- ================================================= --}}
 
-@if($type=='product' || $type=='all')
+
+
+@if($report == 'stock')
+
+
 
 <h2>
+
+    Laporan Stok Barang
+
+</h2>
+
+
+
+
+<table>
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+
+No
+
+</th>
+
+
+<th>
 
 Product
 
-</h2>
+</th>
 
-<table>
 
-<thead>
-
-<tr>
-
-<th>No</th>
-<th>Product</th>
-<th>Category</th>
-<th>Supplier</th>
-<th>Stock</th>
-<th>Minimum</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-@foreach($products as $product)
-
-<tr>
-
-<td>{{ $loop->iteration }}</td>
-
-<td>{{ $product->name }}</td>
-
-<td>{{ $product->category->name }}</td>
-
-<td>{{ $product->supplier->name }}</td>
-
-<td>{{ $product->stock }}</td>
-
-<td>{{ $product->minimum_stock }}</td>
-
-</tr>
-
-@endforeach
-
-</tbody>
-
-</table>
-
-@endif
-
-@if($type=='category' || $type=='all')
-
-<h2>
+<th>
 
 Category
 
-</h2>
+</th>
 
-<table>
 
-<thead>
-
-<tr>
-
-<th>No</th>
-<th>Name</th>
-<th>Total Product</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-@foreach($categories as $category)
-
-<tr>
-
-<td>{{ $loop->iteration }}</td>
-
-<td>{{ $category->name }}</td>
-
-<td>{{ $category->products_count }}</td>
-
-</tr>
-
-@endforeach
-
-</tbody>
-
-</table>
-
-@endif
-
-@if($type=='supplier' || $type=='all')
-
-<h2>
+<th>
 
 Supplier
 
-</h2>
+</th>
 
-<table>
 
-<thead>
+<th>
 
-<tr>
+Stock
 
-<th>No</th>
-<th>Name</th>
-<th>Email</th>
-<th>Phone</th>
+</th>
+
+
+<th>
+
+Minimum
+
+</th>
+
+
 
 </tr>
+
+
 
 </thead>
 
+
+
+
+
 <tbody>
 
-@foreach($suppliers as $supplier)
+
+
+@forelse($products as $product)
+
+
 
 <tr>
 
-<td>{{ $loop->iteration }}</td>
 
-<td>{{ $supplier->name }}</td>
+<td>
 
-<td>{{ $supplier->email }}</td>
+{{ $loop->iteration }}
 
-<td>{{ $supplier->phone }}</td>
+</td>
+
+
+
+
+<td>
+
+
+{{ $product->name }}
+
+
+<br>
+
+
+<small>
+
+SKU : {{ $product->sku }}
+
+</small>
+
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $product->category->name ?? '-' }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $product->supplier->name ?? '-' }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ number_format($product->stock) }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ number_format($product->minimum_stock) }}
+
+</td>
+
+
 
 </tr>
 
-@endforeach
+
+
+
+@empty
+
+
+
+<tr>
+
+
+<td 
+colspan="6"
+style="text-align:center">
+
+Tidak ada data produk.
+
+</td>
+
+
+</tr>
+
+
+
+@endforelse
+
+
 
 </tbody>
 
+
+
 </table>
 
-@endif
 
-@if($type=='user' || $type=='all')
+
+
+@endif
+{{-- ================================================= --}}
+{{-- TRANSACTION REPORT --}}
+{{-- ================================================= --}}
+
+
+
+@if($report == 'transaction')
+
+
 
 <h2>
+
+    Laporan Barang Masuk & Keluar
+
+</h2>
+
+
+
+
+<table>
+
+
+
+<thead>
+
+
+
+<tr>
+
+
+<th>
+
+No
+
+</th>
+
+
+<th>
+
+Tanggal
+
+</th>
+
+
+<th>
+
+Produk
+
+</th>
+
+
+<th>
 
 User
 
-</h2>
+</th>
 
-<table>
 
-<thead>
+<th>
 
-<tr>
+Type
 
-<th>No</th>
-<th>Name</th>
-<th>Email</th>
-<th>Role</th>
+</th>
+
+
+<th>
+
+Jumlah
+
+</th>
+
+
+<th>
+
+Status
+
+</th>
+
+
 
 </tr>
+
+
 
 </thead>
 
+
+
+
+
 <tbody>
 
-@foreach($users as $user)
+
+
+@forelse($transactions as $transaction)
+
+
 
 <tr>
 
-<td>{{ $loop->iteration }}</td>
 
-<td>{{ $user->name }}</td>
 
-<td>{{ $user->email }}</td>
+<td>
 
-<td>{{ ucfirst($user->role) }}</td>
+{{ $loop->iteration }}
 
-</tr>
+</td>
 
-@endforeach
 
-</tbody>
 
-</table>
+
+
+<td>
+
+{{ optional($transaction->transaction_date)->format('d M Y') }}
+
+</td>
+
+
+
+
+
+<td>
+
+
+{{ $transaction->product->name ?? '-' }}
+
+
+<br>
+
+
+<small>
+
+SKU :
+{{ $transaction->product->sku ?? '-' }}
+
+</small>
+
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $transaction->user->name ?? '-' }}
+
+</td>
+
+
+
+
+
+<td>
+
+@if($transaction->type == 'IN')
+
+    Barang Masuk
+
+@else
+
+    Barang Keluar
 
 @endif
 
-@if($type=='stock' || $type=='all')
+</td>
 
-<h2>
 
-Inventory Transaction
 
-</h2>
 
-<table>
 
-<thead>
+<td>
 
-<tr>
+{{ number_format($transaction->quantity) }}
 
-<th>No</th>
-<th>Date</th>
-<th>Product</th>
-<th>Type</th>
-<th>Qty</th>
+</td>
 
-</tr>
 
-</thead>
 
-<tbody>
 
-@foreach($transactions as $transaction)
 
-<tr>
+<td>
 
-<td>{{ $loop->iteration }}</td>
 
-<td>{{ $transaction->transaction_date }}</td>
+{{ ucfirst($transaction->status ?? '-') }}
 
-<td>{{ $transaction->product->name }}</td>
 
-<td>{{ $transaction->type }}</td>
+</td>
 
-<td>{{ $transaction->quantity }}</td>
+
+
 
 </tr>
 
-@endforeach
+
+
+
+@empty
+
+
+
+<tr>
+
+
+<td 
+colspan="7"
+style="text-align:center">
+
+Belum ada transaksi.
+
+</td>
+
+
+</tr>
+
+
+
+@endforelse
+
+
 
 </tbody>
 
-</table>
 
-<h2>
-
-Stock Opname
-
-</h2>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>No</th>
-<th>Date</th>
-<th>Product</th>
-<th>System</th>
-<th>Physical</th>
-<th>Difference</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-@foreach($opnames as $opname)
-
-<tr>
-
-<td>{{ $loop->iteration }}</td>
-
-<td>{{ $opname->created_at }}</td>
-
-<td>{{ $opname->product->name }}</td>
-
-<td>{{ $opname->system_stock }}</td>
-
-<td>{{ $opname->physical_stock }}</td>
-
-<td>{{ $opname->difference }}</td>
-
-</tr>
-
-@endforeach
-
-</tbody>
 
 </table>
+
+
+
 
 @endif
+{{-- ================================================= --}}
+{{-- ACTIVITY REPORT --}}
+{{-- ================================================= --}}
+
+
+
+@if($report == 'activity')
+
+
+
+<h2>
+
+    Aktivitas Pengguna
+
+</h2>
+
+
+
+
+<table>
+
+
+
+<thead>
+
+
+
+<tr>
+
+
+<th>
+
+No
+
+</th>
+
+
+<th>
+
+Waktu
+
+</th>
+
+
+<th>
+
+User
+
+</th>
+
+
+<th>
+
+Role
+
+</th>
+
+
+<th>
+
+Module
+
+</th>
+
+
+<th>
+
+Action
+
+</th>
+
+
+<th>
+
+Description
+
+</th>
+
+
+
+</tr>
+
+
+
+</thead>
+
+
+
+
+
+<tbody>
+
+
+
+@forelse($activities as $activity)
+
+
+
+<tr>
+
+
+
+<td>
+
+{{ $loop->iteration }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ optional($activity->created_at)->format('d M Y H:i') }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $activity->user->name ?? '-' }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ ucfirst($activity->user->role ?? '-') }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $activity->module ?? '-' }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $activity->action ?? '-' }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ $activity->description ?? '-' }}
+
+</td>
+
+
+
+
+</tr>
+
+
+
+
+@empty
+
+
+
+<tr>
+
+
+<td 
+colspan="7"
+style="text-align:center">
+
+Belum ada aktivitas.
+
+</td>
+
+
+</tr>
+
+
+
+@endforelse
+
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+
+@endif
+
+
+
 
 </body>
+
 
 </html>

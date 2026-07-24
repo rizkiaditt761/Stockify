@@ -6,17 +6,22 @@ use App\Http\Requests\StockTransactionRequest;
 use App\Models\Product;
 use App\Models\StockTransaction;
 use App\Services\StockTransaction\StockTransactionService;
+use App\Services\Activity\ActivityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class StockTransactionController extends Controller
 {
     protected StockTransactionService $stockTransactionService;
+    protected ActivityService $activityService;
 
     public function __construct(
-        StockTransactionService $stockTransactionService
+        StockTransactionService $stockTransactionService,
+        ActivityService $activityService
     ) {
         $this->stockTransactionService = $stockTransactionService;
+
+        $this->activityService = $activityService;
     }
 
     public function index(Request $request)
@@ -237,7 +242,7 @@ public function create()
 
             }
 
-        $this->stockTransactionService
+            $transaction = $this->stockTransactionService
             ->createTransaction([
 
                 'product_id'       => $product->id,
@@ -262,6 +267,24 @@ public function create()
                 'confirmed_at'     => null,
 
             ]);
+
+            $this->activityService->log(
+
+                'Stock Transaction',
+
+                'CREATE',
+
+                'Membuat transaksi Stock ' .
+                $transaction->type .
+                ' ' .
+                $product->name .
+                ' sebanyak ' .
+                $transaction->quantity .
+                ' unit',
+
+                $transaction
+
+            );
 
         return redirect()
             ->route('stock_transactions.index')
@@ -331,6 +354,24 @@ public function create()
 
         ]);
 
+        $this->activityService->log(
+
+            'Stock Transaction',
+
+            'CONFIRM',
+
+            'Mengkonfirmasi transaksi Stock ' .
+            $transaction->type .
+            ' ' .
+            $product->name .
+            ' sebanyak ' .
+            $transaction->quantity .
+            ' unit',
+
+            $transaction
+
+        );
+
         return redirect()
             ->route('stock_transactions.index')
             ->with(
@@ -381,6 +422,21 @@ public function reject(
 
     ]);
 
+        $this->activityService->log(
+
+        'Stock Transaction',
+
+        'REJECT',
+
+        'Menolak transaksi Stock ' .
+        $transaction->type .
+        ' ' .
+        $transaction->product->name,
+
+        $transaction
+
+    );
+
     return redirect()
         ->route('stock_transactions.index')
         ->with(
@@ -410,6 +466,21 @@ public function reject(
             'status' => 'Cancelled',
 
         ]);
+
+        $this->activityService->log(
+
+        'Stock Transaction',
+
+        'CANCEL',
+
+        'Membatalkan transaksi Stock ' .
+        $transaction->type .
+        ' ' .
+        $transaction->product->name,
+
+        $transaction
+
+    );
 
         return redirect()
             ->route('stock_transactions.index')
