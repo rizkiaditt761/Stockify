@@ -163,10 +163,20 @@ Route::get(
         )->name('products.destroy');
 
         // User CRUD
-        Route::resource(
-            'users',
-            UserController::class
-        );
+Route::resource(
+    'users',
+    UserController::class
+)->except(['destroy']);
+
+Route::patch(
+    '/users/{user}/activate',
+    [UserController::class, 'activate']
+)->name('users.activate');
+
+Route::patch(
+    '/users/{user}/deactivate',
+    [UserController::class, 'deactivate']
+)->name('users.deactivate');
     });
 
     Route::middleware('role:admin,manager')->group(function () {

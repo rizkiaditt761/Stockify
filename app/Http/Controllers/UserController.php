@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Services\User\UserService;
 use App\Services\Activity\ActivityService;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -22,13 +23,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userService->getAllUsers();
+        $data = $this->userService->getAllUsers([
+            'search' => $request->search,
+            'role' => $request->role,
+            'status' => $request->status,
+        ]);
 
         return view(
             'pages.user.index',
-            compact('users')
+            $data
         );
     }
 
@@ -74,7 +79,12 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = $this->userService->findById($id);
+
+        return view(
+            'pages.user.show',
+            compact('user')
+        );
     }
 
     /**
@@ -123,31 +133,64 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Temporary.
+     * Akan diganti menjadi Activate / Deactivate.
      */
-    public function destroy(string $id)
-    {
-        $user = $this->userService->findById($id);
-
-        $this->userService->deleteUser($id);
-
-        $this->activityService->log(
-
-            'User',
-
-            'DELETE',
-
-            'Menghapus user ' . $user->name,
-
-            $user
-
-        );
+    public function deactivate(string $id)
+{
+    if ((int) auth()->id() === (int) $id) {
 
         return redirect()
             ->route('users.index')
             ->with(
-                'success',
-                'User berhasil dihapus.'
+                'warning',
+                'Anda tidak dapat menonaktifkan akun yang sedang digunakan.'
             );
     }
+
+    $user = $this->userService->deactivateUser($id);
+
+    $this->activityService->log(
+
+        'User',
+
+        'DEACTIVATE',
+
+        'Menonaktifkan user '.$user->name,
+
+        $user
+
+    );
+
+    return redirect()
+        ->route('users.index')
+        ->with(
+            'success',
+            'User berhasil dinonaktifkan.'
+        );
+}
+
+public function activate(string $id)
+{
+    $user = $this->userService->activateUser($id);
+
+    $this->activityService->log(
+
+        'User',
+
+        'ACTIVATE',
+
+        'Mengaktifkan user '.$user->name,
+
+        $user
+
+    );
+
+    return redirect()
+        ->route('users.index')
+        ->with(
+            'success',
+            'User berhasil diaktifkan kembali.'
+        );
+}
 }

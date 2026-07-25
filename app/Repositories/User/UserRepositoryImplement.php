@@ -17,12 +17,83 @@ class UserRepositoryImplement extends Eloquent implements UserRepository
         $this->model = $model;
     }
 
-    public function getAllUsers()
-    {
-        return $this->model
-            ->latest()
-            ->get();
+    public function getAllUsers(array $filters = [])
+{
+    $query = $this->model
+        ->where('id', '!=', auth()->id());
+
+    if (!empty($filters['search'])) {
+
+    $search = $filters['search'];
+
+    $query->where(function ($q) use ($search) {
+
+        $q->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhere('role', 'like', "%{$search}%");
+
+    });
+
+}
+
+
+if (!empty($filters['role'])) {
+
+    $query->where(
+        'role',
+        $filters['role']
+    );
+
+}
+
+
+if (!empty($filters['status'])) {
+
+    if ($filters['status'] == 'active') {
+
+        $query->where(
+            'is_active',
+            true
+        );
+
     }
+
+
+    if ($filters['status'] == 'inactive') {
+
+        $query->where(
+            'is_active',
+            false
+        );
+
+    }
+
+}
+
+    $totalUser = $this->model->count();
+
+
+    $activeUser = $this->model
+        ->where('is_active', true)
+        ->count();
+
+
+    $inactiveUser = $this->model
+        ->where('is_active', false)
+        ->count();
+
+    $users = $query
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    return [
+        'users' => $users,
+        'totalUser' => $totalUser,
+        'activeUser' => $activeUser,
+        'inactiveUser' => $inactiveUser,
+    ];
+}
 
     public function findById($id)
     {
@@ -43,12 +114,25 @@ class UserRepositoryImplement extends Eloquent implements UserRepository
         return $user;
     }
 
-    public function deleteUser($id)
-    {
-        $user = $this->findById($id);
+    public function activateUser($id)
+{
+    $user = $this->findById($id);
 
-        $user->delete();
+    $user->update([
+        'is_active' => true,
+    ]);
 
-        return $user;
-    }
+    return $user;
+}
+
+public function deactivateUser($id)
+{
+    $user = $this->findById($id);
+
+    $user->update([
+        'is_active' => false,
+    ]);
+
+    return $user;
+}
 }

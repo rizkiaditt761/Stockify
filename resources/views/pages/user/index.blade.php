@@ -4,116 +4,778 @@
 
 <div class="p-4">
 
-    <div class="flex justify-between items-center mb-5">
 
-        <h1 class="text-2xl font-bold">
-            User Management
-        </h1>
+    {{-- Header --}}
+    <div class="mb-6 flex items-center justify-between">
 
-        <a href="{{ route('users.create') }}"
-            class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800">
-            + Tambah User
-        </a>
+
+        <div>
+
+            <h1 class="text-3xl font-bold text-gray-800">
+                User Management
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Kelola akun pengguna, role, dan akses sistem Stockify.
+            </p>
+
+        </div>
+
+
+
+        @if(auth()->user()->role == 'admin')
+
+            <a href="{{ route('users.create') }}"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium">
+
+                + Tambah User
+
+            </a>
+
+        @endif
+
 
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4">
-            {{ session('success') }}
+
+
+
+    {{-- User Summary Card --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+
+
+        {{-- Total User --}}
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">
+
+
+            <p class="text-sm font-medium text-blue-700">
+
+                Total User
+
+            </p>
+
+
+            <h2 class="text-4xl font-bold text-blue-700 mt-2">
+
+                {{ $totalUser }}
+
+            </h2>
+
+
+            <p class="text-sm text-gray-500 mt-2">
+
+                Termasuk akun Anda yang sedang login
+
+            </p>
+
+
         </div>
-    @endif
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow">
 
-        <table class="w-full text-left">
 
-            <thead class="bg-gray-100">
 
-                <tr>
+        {{-- Active User --}}
+        <div class="bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm">
 
-                    <th class="p-3">Nama</th>
 
-                    <th class="p-3">Email</th>
+            <p class="text-sm font-medium text-green-700">
 
-                    <th class="p-3">Role</th>
+                Active User
 
-                    <th class="p-3 text-center">Aksi</th>
+            </p>
 
-                </tr>
 
-            </thead>
+            <h2 class="text-4xl font-bold text-green-700 mt-2">
 
-            <tbody>
+                {{ $activeUser }}
 
-                @forelse($users as $user)
+            </h2>
 
-                    <tr class="border-b">
 
-                        <td class="p-3">
-                            {{ $user->name }}
-                        </td>
+            <p class="text-sm text-gray-500 mt-2">
 
-                        <td class="p-3">
-                            {{ $user->email }}
-                        </td>
+                User yang dapat login ke sistem
 
-                        <td class="p-3 capitalize">
-                            {{ $user->role }}
-                        </td>
+            </p>
 
-                        <td class="p-3">
 
-                            <div class="flex justify-center gap-2">
+        </div>
 
-                                <a
-                                    href="{{ route('users.edit',$user->id) }}"
-                                    class="bg-yellow-500 text-white px-3 py-1 rounded">
-                                    Edit
-                                </a>
 
-                                <form
-                                    action="{{ route('users.destroy',$user->id) }}"
-                                    method="POST">
 
-                                    @csrf
-                                    @method('DELETE')
 
-                                    <button
-                                        onclick="return confirm('Yakin ingin menghapus user ini?')"
-                                        class="bg-red-600 text-white px-3 py-1 rounded">
+        {{-- Inactive User --}}
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 shadow-sm">
 
-                                        Hapus
 
-                                    </button>
+            <p class="text-sm font-medium text-gray-700">
 
-                                </form>
+                Inactive User
 
-                            </div>
+            </p>
 
-                        </td>
 
-                    </tr>
+            <h2 class="text-4xl font-bold text-gray-700 mt-2">
 
-                @empty
+                {{ $inactiveUser }}
+
+            </h2>
+
+
+            <p class="text-sm text-gray-500 mt-2">
+
+                User yang dinonaktifkan
+
+            </p>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+    {{-- Filter --}}
+    <div class="flex flex-col md:flex-row gap-3 mb-6">
+
+
+        <form method="GET"
+            class="flex flex-col md:flex-row gap-3">
+
+
+
+            {{-- Search --}}
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari user..."
+                class="border rounded-lg px-4 py-2 w-72">
+
+
+
+
+
+            {{-- Filter Role --}}
+            <select
+                name="role"
+                onchange="this.form.submit()"
+                class="border rounded-lg px-4 py-2 w-60">
+
+
+                <option value="">
+
+                    Semua Role
+
+                </option>
+
+
+                <option
+                    value="admin"
+                    {{ request('role') == 'admin' ? 'selected' : '' }}>
+
+                    Admin
+
+                </option>
+
+
+                <option
+                    value="manager"
+                    {{ request('role') == 'manager' ? 'selected' : '' }}>
+
+                    Manager Gudang
+
+                </option>
+
+
+                <option
+                    value="staff"
+                    {{ request('role') == 'staff' ? 'selected' : '' }}>
+
+                    Staff Gudang
+
+                </option>
+
+
+            </select>
+
+
+
+
+
+            {{-- Filter Status --}}
+            <select
+                name="status"
+                onchange="this.form.submit()"
+                class="border rounded-lg px-4 py-2 w-60">
+
+
+                <option
+                    value="">
+
+                    Semua Status
+
+                </option>
+
+
+                <option
+                    value="active"
+                    {{ request('status') == 'active' ? 'selected' : '' }}>
+
+                    Active
+
+                </option>
+
+
+                <option
+                    value="inactive"
+                    {{ request('status') == 'inactive' ? 'selected' : '' }}>
+
+                    Inactive
+
+                </option>
+
+
+            </select>
+
+
+
+
+
+            {{-- Button Search --}}
+            <button
+                type="submit"
+                class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+
+
+                Cari
+
+
+            </button>
+
+
+
+        </form>
+
+
+
+
+
+        {{-- Reset --}}
+        @if(request('search') || request('role') || request('status'))
+
+            <a href="{{ route('users.index') }}"
+                class="bg-gray-300 text-black px-5 py-2 rounded-lg hover:bg-gray-400">
+
+
+                Reset
+
+
+            </a>
+
+        @endif
+
+
+
+    </div>
+
+
+
+
+
+    {{-- User Table --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+
+        <div class="overflow-x-auto">
+
+
+            <table class="w-full text-sm">
+
+
+
+                <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+
 
                     <tr>
 
-                        <td colspan="4" class="p-5 text-center">
 
-                            Belum ada data user.
+                        <th class="px-6 py-4 text-left">
+                            No
+                        </th>
 
-                        </td>
+
+                        <th class="px-6 py-4 text-left">
+                            User
+                        </th>
+
+
+                        <th class="px-6 py-4 text-left">
+                            Email
+                        </th>
+
+
+                        <th class="px-6 py-4 text-center">
+                            Role
+                        </th>
+
+
+                        <th class="px-6 py-4 text-center">
+                            Status
+                        </th>
+
+
+                        <th class="px-6 py-4 text-center">
+                            Action
+                        </th>
+
 
                     </tr>
 
+
+                </thead>
+
+
+
+
+                <tbody>
+
+
+
+                @forelse($users as $user)
+
+
+
+                    <tr class="border-t hover:bg-gray-50">
+
+
+
+                        {{-- No --}}
+                        <td class="px-6 py-4">
+
+
+                            {{ $users->firstItem() + $loop->index }}
+
+
+                        </td>
+
+
+
+
+
+                        {{-- User --}}
+                        <td class="px-6 py-4">
+
+
+                            <div class="flex items-center gap-3">
+
+
+                                <div
+                                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+
+
+                                    <span class="font-semibold text-blue-700">
+
+
+                                        {{ strtoupper(substr($user->name,0,1)) }}
+
+
+                                    </span>
+
+
+                                </div>
+
+
+
+                                <div>
+
+
+                                    <div class="font-semibold text-gray-800">
+
+
+                                        {{ $user->name }}
+
+
+                                    </div>
+
+
+
+                                    <div class="text-xs text-gray-500 mt-1">
+
+
+                                        ID :
+                                        {{ $user->id }}
+
+
+                                    </div>
+
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </td>
+
+
+
+
+
+                        {{-- Email --}}
+                        <td class="px-6 py-4">
+
+
+                            {{ $user->email }}
+
+
+                        </td>
+
+
+
+
+
+
+
+                        {{-- Role --}}
+                        <td class="px-6 py-4 text-center">
+
+
+
+                            @if($user->role == 'admin')
+
+
+                                <span
+                                    class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+
+
+                                    Admin
+
+
+                                </span>
+
+
+
+                            @elseif($user->role == 'manager')
+
+
+
+                                <span
+                                    class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+
+
+                                    Manager Gudang
+
+
+                                </span>
+
+
+
+                            @else
+
+
+
+                                <span
+                                    class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
+
+
+                                    Staff Gudang
+
+
+                                </span>
+
+
+
+                            @endif
+
+
+
+                        </td>
+
+
+
+
+
+
+
+                        {{-- Status --}}
+                        <td class="px-6 py-4 text-center">
+
+
+
+                            @if($user->is_active)
+
+
+
+                                <span
+                                    class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+
+
+                                    Active
+
+
+                                </span>
+
+
+
+                            @else
+
+
+
+                                <span
+                                    class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
+
+
+                                    Inactive
+
+
+                                </span>
+
+
+
+                            @endif
+
+
+
+                        </td>
+
+
+
+
+
+
+
+                        {{-- Action --}}
+                        <td class="px-6 py-4 text-center">
+
+
+
+                            <div class="flex justify-start gap-2">
+
+
+
+
+
+                                {{-- Edit --}}
+
+                                <a href="{{ route('users.edit',$user->id) }}"
+                                    class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+
+
+                                    Edit
+
+
+                                </a>
+
+
+
+
+
+
+
+
+                                {{-- Activate / Deactivate --}}
+
+
+                                @if($user->is_active)
+
+
+
+                                    <form
+                                        action="{{ route('users.deactivate',$user->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Nonaktifkan user ini?')">
+
+
+                                        @csrf
+                                        @method('PATCH')
+
+
+
+                                        <button
+                                            type="submit"
+                                            class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
+
+
+                                            Nonaktifkan
+
+
+                                        </button>
+
+
+
+                                    </form>
+
+
+
+
+                                @else
+
+
+
+                                    <form
+                                        action="{{ route('users.activate',$user->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Aktifkan kembali user ini?')">
+
+
+                                        @csrf
+                                        @method('PATCH')
+
+
+
+                                        <button
+                                            type="submit"
+                                            class="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
+
+
+                                            Aktifkan
+
+
+                                        </button>
+
+
+
+                                    </form>
+
+
+
+                                @endif
+
+
+
+
+
+                            </div>
+
+
+
+                        </td>
+
+
+
+
+                    </tr>
+
+
+
+
+
+                @empty
+
+
+
+                    <tr>
+
+
+                        <td colspan="6"
+                            class="text-center py-10 text-gray-500">
+
+
+                            Tidak ada data user.
+
+
+                        </td>
+
+
+                    </tr>
+
+
+
                 @endforelse
 
-            </tbody>
 
-        </table>
+
+
+
+                </tbody>
+
+
+
+            </table>
+
+
+
+        </div>
+                {{-- Pagination --}}
+
+        @if($users->hasPages())
+
+
+            <div class="border-t bg-white px-6 py-4">
+
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+
+
+                    <div class="text-sm text-gray-600">
+
+
+                        Menampilkan
+
+
+                        <span class="font-semibold text-blue-600">
+
+                            {{ $users->firstItem() }}
+
+                        </span>
+
+
+                        -
+
+
+                        <span class="font-semibold text-blue-600">
+
+                            {{ $users->lastItem() }}
+
+                        </span>
+
+
+
+                        dari
+
+
+                        <span class="font-semibold text-blue-600">
+
+                            {{ $users->total() }}
+
+                        </span>
+
+
+                        user
+
+
+
+                    </div>
+
+
+
+
+                    {{ $users->links() }}
+
+
+
+                </div>
+
+
+            </div>
+
+
+        @endif
+
+
 
     </div>
 
+
 </div>
+
 
 @endsection

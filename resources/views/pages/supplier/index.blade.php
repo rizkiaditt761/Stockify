@@ -43,56 +43,56 @@
 
 
 
-    {{-- Summary --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+    {{-- Total Supplier Card --}}
+<div class="mb-6">
 
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+    <div class="rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
 
-            <p class="text-sm text-gray-500">
+        <p class="text-sm font-medium text-blue-700">
+
+            @if(request('status') == 'active')
+
+                Total Supplier (Active)
+
+            @elseif(request('status') == 'inactive')
+
+                Total Supplier (Inactive)
+
+            @else
+
                 Total Supplier
-            </p>
 
-            <h2 class="text-3xl font-bold text-blue-700 mt-2">
+            @endif
 
-                {{ $totalSupplier }}
+        </p>
 
-            </h2>
+        <h2 class="mt-2 text-4xl font-bold text-blue-700">
 
-        </div>
+            {{ $totalSupplier }}
 
+        </h2>
 
+        <p class="mt-2 text-sm text-gray-500">
 
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            @if(request('status') == 'active')
 
-            <p class="text-sm text-gray-500">
-                Supplier Aktif
-            </p>
+                Menampilkan supplier yang masih aktif.
 
-            <h2 class="text-3xl font-bold text-green-600 mt-2">
+            @elseif(request('status') == 'inactive')
 
-                {{ $activeSupplier }}
+                Menampilkan supplier yang sudah dinonaktifkan.
 
-            </h2>
+            @else
 
-        </div>
+                Menampilkan seluruh supplier.
 
+            @endif
 
-
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-
-            <p class="text-sm text-gray-500">
-                Supplier Nonaktif
-            </p>
-
-            <h2 class="text-3xl font-bold text-red-600 mt-2">
-
-                {{ $inactiveSupplier }}
-
-            </h2>
-
-        </div>
+        </p>
 
     </div>
+
+</div>
 
 
 
@@ -152,35 +152,70 @@
 
 
 
-    {{-- Table Card --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
+    {{-- Filter --}}
+<div class="flex flex-col gap-3 mb-6 md:flex-row">
+
+    <form
+        method="GET"
+        class="flex flex-col gap-3 md:flex-row">
 
         {{-- Search --}}
-        <div class="p-5 border-b">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari supplier..."
+            class="w-72 rounded-lg border px-4 py-2">
 
-            <form method="GET">
+        {{-- Status --}}
+        <select
+            name="status"
+            onchange="this.form.submit()"
+            class="w-60 rounded-lg border px-4 py-2">
 
-                <div class="flex flex-col md:flex-row gap-3">
+            <option value="all"
+                {{ request('status','all') == 'all' ? 'selected' : '' }}>
+                Semua
+            </option>
 
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Cari nama supplier, email atau nomor HP..."
-                        class="w-full rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+            <option value="active"
+                {{ request('status') == 'active' ? 'selected' : '' }}>
+                Active
+            </option>
 
-                    <button
-                        class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl">
+            <option value="inactive"
+                {{ request('status') == 'inactive' ? 'selected' : '' }}>
+                Inactive
+            </option>
 
-                        Cari
+        </select>
 
-                    </button>
+        <button
+            type="submit"
+            class="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700">
 
-                </div>
+            Cari
 
-            </form>
+        </button>
 
-        </div>
+    </form>
+
+    @if(request('search') || request('status') != 'all')
+
+        <a
+            href="{{ route('suppliers.index') }}"
+            class="rounded-lg bg-gray-300 px-5 py-2 text-black hover:bg-gray-400">
+
+            Reset
+
+        </a>
+
+    @endif
+
+</div>
+
+{{-- Table --}}
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
 
 
 
@@ -299,117 +334,95 @@
 
 
     {{-- Status --}}
-    <td class="px-6 py-4">
+    <td class="px-6 py-4 text-center">
 
-        @if($supplier->is_active)
+    @if($supplier->is_active)
 
-            <span
-                class="inline-flex items-center
-                px-3 py-1 rounded-full
-                bg-green-100 text-green-700
-                font-semibold">
+        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
 
-                Active
+            Active
 
-            </span>
+        </span>
 
-        @else
+    @else
 
-            <span
-                class="inline-flex items-center
-                px-3 py-1 rounded-full
-                bg-red-100 text-red-700
-                font-semibold">
+        <span class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
 
-                Inactive
+            Inactive
 
-            </span>
+        </span>
 
-        @endif
+    @endif
 
-    </td>
+</td>
 
 
 
     {{-- Action --}}
-    <td class="px-6 py-4">
+    <td class="px-6 py-4 text-center">
 
-        <div class="flex justify-center gap-2 flex-wrap">
+    <div class="flex justify-start gap-2">
 
-            
-            <a
-                href="{{ route('suppliers.show',$supplier->id) }}"
-                class="px-3 py-2 text-xs font-medium
-                rounded-lg
-                bg-yellow-500 text-white
-                hover:bg-yellow-600">
+        {{-- Detail --}}
+        <a
+            href="{{ route('suppliers.show',$supplier->id) }}"
+            class="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
 
-                Detail
+            Detail
 
-            </a>
+        </a>
 
+        {{-- Edit --}}
+        <a
+            href="{{ route('suppliers.edit',$supplier->id) }}"
+            class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
 
-            <a
-                href="{{ route('suppliers.edit',$supplier->id) }}"
-                class="px-3 py-2 text-xs font-medium
-                rounded-lg
-                bg-yellow-500 text-white
-                hover:bg-yellow-600">
+            Edit
 
-                Edit
+        </a>
 
-            </a>
+        @if($supplier->is_active)
 
+            <form
+                action="{{ route('suppliers.deactivate',$supplier->id) }}"
+                method="POST"
+                onsubmit="return confirm('Nonaktifkan supplier ini?')">
 
+                @csrf
+                @method('PATCH')
 
-            @if($supplier->is_active)
+                <button
+                    class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
 
-                <form
-                    action="{{ route('suppliers.deactivate',$supplier->id) }}"
-                    method="POST"
-                    onsubmit="return confirm('Nonaktifkan supplier ini?')">
+                    Deactivate
 
-                    @csrf
-                    @method('PATCH')
+                </button>
 
-                    <button
-                        class="px-3 py-2 text-xs font-medium
-                        rounded-lg
-                        bg-red-600 text-white
-                        hover:bg-red-700">
+            </form>
 
-                        Deactivate
+        @else
 
-                    </button>
+            <form
+                action="{{ route('suppliers.activate',$supplier->id) }}"
+                method="POST">
 
-                </form>
+                @csrf
+                @method('PATCH')
 
-            @else
+                <button
+                    class="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
 
-                <form
-                    action="{{ route('suppliers.activate',$supplier->id) }}"
-                    method="POST">
+                    Activate
 
-                    @csrf
-                    @method('PATCH')
+                </button>
 
-                    <button
-                        class="px-3 py-2 text-xs font-medium
-                        rounded-lg
-                        bg-green-600 text-white
-                        hover:bg-green-700">
+            </form>
 
-                        Activate
+        @endif
 
-                    </button>
+    </div>
 
-                </form>
-
-            @endif
-
-        </div>
-
-    </td>
+</td>
 
 </tr>
 
@@ -436,9 +449,37 @@
 
 @if($suppliers->hasPages())
 
-<div class="px-6 py-4 border-t border-gray-200">
+<div class="border-t bg-white px-6 py-4">
 
-    {{ $suppliers->links() }}
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+        <div class="text-sm text-gray-600">
+
+            Menampilkan
+
+            <span class="font-semibold text-blue-600">
+                {{ $suppliers->firstItem() }}
+            </span>
+
+            -
+
+            <span class="font-semibold text-blue-600">
+                {{ $suppliers->lastItem() }}
+            </span>
+
+            dari
+
+            <span class="font-semibold text-blue-600">
+                {{ $suppliers->total() }}
+            </span>
+
+            supplier
+
+        </div>
+
+        {{ $suppliers->links() }}
+
+    </div>
 
 </div>
 

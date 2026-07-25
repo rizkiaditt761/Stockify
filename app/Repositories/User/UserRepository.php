@@ -6,7 +6,7 @@ use LaravelEasyRepository\Repository;
 
 interface UserRepository extends Repository
 {
-    public function getAllUsers();
+    public function getAllUsers(array $filters = []);
 
     public function findById($id);
 
@@ -14,5 +14,7 @@ interface UserRepository extends Repository
 
     public function updateUser($id, $data);
 
-    public function deleteUser($id);
+    public function activateUser($id);
+
+    public function deactivateUser($id);
 }

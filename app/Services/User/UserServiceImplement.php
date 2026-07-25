@@ -18,10 +18,10 @@ class UserServiceImplement extends Service implements UserService
         $this->mainRepository = $mainRepository;
     }
 
-    public function getAllUsers()
-    {
-        return $this->mainRepository->getAllUsers();
-    }
+    public function getAllUsers(array $filters = [])
+{
+    return $this->mainRepository->getAllUsers($filters);
+}
 
     public function findById($id)
     {
@@ -53,8 +53,13 @@ class UserServiceImplement extends Service implements UserService
         );
     }
 
-    public function deleteUser($id)
-    {
-        return $this->mainRepository->deleteUser($id);
-    }
+    public function activateUser($id)
+{
+    return $this->mainRepository->activateUser($id);
+}
+
+public function deactivateUser($id)
+{
+    return $this->mainRepository->deactivateUser($id);
+}
 }

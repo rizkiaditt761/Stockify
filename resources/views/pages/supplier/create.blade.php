@@ -19,12 +19,7 @@
 
         </div>
 
-        <a href="{{ route('suppliers.index') }}"
-            class="mt-4 md:mt-0 px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-xl hover:bg-gray-300">
-
-            ← Kembali
-
-        </a>
+        
 
     </div>
 
@@ -167,14 +162,14 @@
 
                 <button
                     type="submit"
-                    class="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                    class="px-5 py-2.5 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">
 
                     Simpan Supplier
 
                 </button>
 
                 <a href="{{ route('suppliers.index') }}"
-                    class="px-6 py-3 rounded-xl bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition">
+                    class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
 
                     Batal
 
