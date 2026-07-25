@@ -163,8 +163,9 @@ class StockTransactionController extends Controller
         */
 
                 $transactions = $query
-            ->latest('transaction_date')
-            ->get();
+                    ->latest('transaction_date')
+                    ->paginate(10)
+                    ->withQueryString();
 
         $activeType = $request->type;
 
@@ -196,6 +197,7 @@ class StockTransactionController extends Controller
 
 public function create()
 {
+    
     $products = Product::where('is_active', true)
         ->orderBy('name')
         ->get();
@@ -496,9 +498,19 @@ public function reject(
     |--------------------------------------------------------------------------
     */
 
-    public function show(StockTransaction $stockTransaction)
+     public function show(StockTransaction $transaction)
     {
-        //
+        $transaction->load([
+            'product.category',
+            'product.supplier',
+            'user',
+            'confirmedBy',
+        ]);
+
+        return view(
+            'pages.stock_transaction.show',
+            compact('transaction')
+        );
     }
 
     /*

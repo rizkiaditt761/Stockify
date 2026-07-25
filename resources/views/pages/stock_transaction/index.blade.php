@@ -408,9 +408,7 @@
                         </th>
 
 
-                        <th class="px-6 py-4 text-left">
-                            Dikonfirmasi Oleh
-                        </th>
+                        
 
 
                         <th class="px-6 py-4 text-center">
@@ -539,32 +537,11 @@
 
 
 
-                            @elseif($transaction->status == 'Rejected')
+                          @elseif($transaction->status == 'Rejected')
 
-
-                                <div class="flex flex-col items-center gap-2">
-
-
-                                    <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
-
-                                        Rejected
-
-                                    </span>
-
-
-
-                                    @if($transaction->rejection_reason)
-
-                                        <p class="text-xs text-gray-600">
-
-                                            {{ $transaction->rejection_reason }}
-
-                                        </p>
-
-                                    @endif
-
-
-                                </div>
+    <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+        Rejected
+    </span>
 
 
 
@@ -592,41 +569,7 @@
 
                         {{-- Confirmed By --}}
 
-                        <td class="px-6 py-4">
-
-
-                            @if($transaction->confirmedBy)
-
-
-                                {{ $transaction->confirmedBy->name }}
-
-
-                                <br>
-
-
-                                <span class="text-xs text-gray-500">
-
-                                    {{ $transaction->confirmed_at?->format('d M Y H:i') }}
-
-                                </span>
-
-
-
-                            @else
-
-
-                                <span class="text-gray-400">
-
-                                    Belum dikonfirmasi
-
-                                </span>
-
-
-
-                            @endif
-
-
-                        </td>
+                        
 
 
 
@@ -662,129 +605,83 @@
 
                         {{-- Action --}}
 
-                        <td class="px-6 py-4 text-center">
+    <td class="px-6 py-4">
 
+    <div class="flex items-center justify-start gap-2">
 
+        {{-- Detail --}}
+        <a
+            href="{{ route('stock_transactions.show',$transaction->id) }}"
+            class="w-20 rounded-lg bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white hover:bg-blue-700">
 
-                            {{-- Manager Cancel milik sendiri --}}
+            Detail
 
-                            @if(
-                                auth()->user()->role == 'manager'
-                                &&
-                                $transaction->status == 'Pending'
-                                &&
-                                $transaction->user_id == auth()->id()
-                            )
+        </a>
 
+        {{-- Manager --}}
+        @if(
+            auth()->user()->role == 'manager'
+            &&
+            $transaction->status == 'Pending'
+            &&
+            $transaction->user_id == auth()->id()
+        )
 
-                                <form
-                                    action="{{ route('stock_transactions.cancel', $transaction->id) }}"
-                                    method="POST">
+            <form
+                action="{{ route('stock_transactions.cancel',$transaction->id) }}"
+                method="POST">
 
+                @csrf
+                @method('PATCH')
 
-                                    @csrf
-                                    @method('PATCH')
+                <button
+                    onclick="return confirm('Batalkan transaksi ini?')"
+                    class="w-20 rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700">
 
+                    Cancel
 
-                                    <button
-                                        onclick="return confirm('Batalkan transaksi ini?')"
-                                        class="rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700">
+                </button>
 
+            </form>
 
-                                        Cancel
+        {{-- Staff --}}
+        @elseif(
+            auth()->user()->role == 'staff'
+            &&
+            $transaction->status == 'Pending'
+        )
 
+            <form
+                action="{{ route('stock_transactions.confirm',$transaction->id) }}"
+                method="POST">
 
-                                    </button>
+                @csrf
+                @method('PUT')
 
+                <button
+                    onclick="return confirm('Konfirmasi transaksi ini?')"
+                    class="w-20 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700">
 
-                                </form>
+                    Confirm
 
+                </button>
 
+            </form>
 
+            <button
+                type="button"
+                onclick="openRejectModal({{ $transaction->id }})"
+                class="w-20 rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700">
 
+                Reject
 
-                            {{-- Staff Confirm / Reject --}}
+            </button>
 
-                            @elseif(
-                                auth()->user()->role == 'staff'
-                                &&
-                                $transaction->status == 'Pending'
-                            )
+        @endif
 
+    </div>
 
-                                <div class="flex justify-center gap-2">
-
-
-
-
-
-                                    {{-- Confirm --}}
-
-                                    <form
-                                        action="{{ route('stock_transactions.confirm', $transaction->id) }}"
-                                        method="POST">
-
-
-                                        @csrf
-                                        @method('PUT')
-
-
-                                        <button
-                                            onclick="return confirm('Konfirmasi transaksi ini?')"
-                                            class="rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700">
-
-
-                                            Confirm
-
-
-                                        </button>
-
-
-                                    </form>
-
-
-
-
-
-
-                                    {{-- Reject --}}
-
-                                    <button
-                                        type="button"
-                                        onclick="openRejectModal({{ $transaction->id }})"
-                                        class="rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700">
-
-
-                                        Reject
-
-
-                                    </button>
-
-
-
-                                </div>
-
-
-
-
-
-                            @else
-
-
-
-                                <span class="text-gray-400">
-
-                                    -
-
-                                </span>
-
-
-
-                            @endif
-
-
-
-                        </td>
+</td>
 
 
 
@@ -842,6 +739,16 @@
 
 
         </div>
+
+        @if($transactions->hasPages())
+
+<div class="border-t border-gray-200 px-6 py-4">
+
+    {{ $transactions->links() }}
+
+</div>
+
+@endif
 
 
     </div>

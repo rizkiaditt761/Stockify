@@ -238,6 +238,11 @@ Route::get(
             [StockTransactionController::class, 'index']
         )->name('stock_transactions.index');
 
+  Route::get(
+    '/stock_transactions/detail/{transaction}',
+    [StockTransactionController::class, 'show']
+)->name('stock_transactions.show');
+
         /*
         |--------------------------------------------------------------------------
         | Stock Monitoring (Read)
@@ -260,6 +265,26 @@ Route::get(
             [StockOpnameController::class, 'index']
         )->name('stock.opname.index');
     });
+
+    /*
+|--------------------------------------------------------------------------
+| 
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('role:manager')->group(function () {
+
+    Route::get(
+        '/stock_transactions/create',
+        [StockTransactionController::class, 'create']
+    )->name('stock_transactions.create');
+
+    Route::post(
+        '/stock_transactions',
+        [StockTransactionController::class, 'store']
+    )->name('stock_transactions.store');
+
+});
 
     /*
     |--------------------------------------------------------------------------
@@ -314,16 +339,6 @@ Route::get(
         | Stock Transaction
         |--------------------------------------------------------------------------
         */
-
-        Route::get(
-            '/stock_transactions/create',
-            [StockTransactionController::class, 'create']
-        )->name('stock_transactions.create');
-
-        Route::post(
-            '/stock_transactions',
-            [StockTransactionController::class, 'store']
-        )->name('stock_transactions.store');
 
         Route::patch(
             '/stock_transactions/{transaction}/cancel',
