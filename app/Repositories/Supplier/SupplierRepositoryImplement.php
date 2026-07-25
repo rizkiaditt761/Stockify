@@ -19,5 +19,27 @@ class SupplierRepositoryImplement extends Eloquent implements SupplierRepository
         $this->model = $model;
     }
 
+    public function getSupplierData(array $filters)
+{
+    $query = Supplier::query();
+
+    if (!empty($filters['search'])) {
+
+        $query->where(function ($q) use ($filters) {
+
+            $q->where('name', 'like', '%' . $filters['search'] . '%')
+              ->orWhere('email', 'like', '%' . $filters['search'] . '%')
+              ->orWhere('phone', 'like', '%' . $filters['search'] . '%');
+
+        });
+
+    }
+
+    return $query
+        ->withCount('products')
+        ->orderBy('name')
+        ->paginate(10)
+        ->withQueryString();
+}
     // Write something awesome :)
 }

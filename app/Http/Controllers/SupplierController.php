@@ -7,6 +7,7 @@ use App\Services\Supplier\SupplierService;
 use App\Services\Activity\ActivityService;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
+use App\Models\Product;
 
 class SupplierController extends Controller
 {
@@ -14,33 +15,50 @@ class SupplierController extends Controller
 
     protected ActivityService $activityService;
 
-
     public function __construct(
         SupplierService $supplierService,
         ActivityService $activityService
     ) {
         $this->supplierService = $supplierService;
-
         $this->activityService = $activityService;
     }
 
-
-    public function index()
+    public function index(Request $request)
     {
-        $suppliers = $this->supplierService->all();
+        $filters = [
+            'search' => $request->search,
+        ];
+
+        $suppliers = $this->supplierService
+            ->getSupplierData($filters);
+
+        $totalSupplier = Supplier::count();
+
+        $activeSupplier = Supplier::where(
+            'is_active',
+            true
+        )->count();
+
+        $inactiveSupplier = Supplier::where(
+            'is_active',
+            false
+        )->count();
 
         return view(
             'pages.supplier.index',
-            compact('suppliers')
+            compact(
+                'suppliers',
+                'totalSupplier',
+                'activeSupplier',
+                'inactiveSupplier'
+            )
         );
     }
-
 
     public function create()
     {
         return view('pages.supplier.create');
     }
-
 
     public function store(SupplierRequest $request)
     {
@@ -48,7 +66,6 @@ class SupplierController extends Controller
             $request->validated()
         );
 
-        // Ambil supplier yang baru dibuat
         $supplier = Supplier::latest('id')->first();
 
         $this->activityService->log(
@@ -67,10 +84,9 @@ class SupplierController extends Controller
             ->route('suppliers.index')
             ->with(
                 'success',
-                'Supplier successfully created.'
+                'Supplier berhasil ditambahkan.'
             );
     }
-
 
     public function edit(Supplier $supplier)
     {
@@ -79,7 +95,6 @@ class SupplierController extends Controller
             compact('supplier')
         );
     }
-
 
     public function update(
         SupplierRequest $request,
@@ -106,10 +121,99 @@ class SupplierController extends Controller
             ->route('suppliers.index')
             ->with(
                 'success',
-                'Supplier updated successfully.'
+                'Supplier berhasil diperbarui.'
             );
     }
 
+    public function activate(Supplier $supplier)
+    {
+        $supplier->update([
+            'is_active' => true
+        ]);
+
+        $this->activityService->log(
+
+            'Supplier',
+
+            'ACTIVATE',
+
+            'Mengaktifkan supplier ' . $supplier->name,
+
+            $supplier
+
+        );
+
+        return redirect()
+            ->route('suppliers.index')
+            ->with(
+                'success',
+                'Supplier berhasil diaktifkan.'
+            );
+    }
+
+    public function deactivate(Supplier $supplier)
+    {
+        $totalProduct = Product::where(
+            'supplier_id',
+            $supplier->id
+        )->count();
+
+        if ($totalProduct > 0) {
+
+return redirect()
+    ->route('suppliers.index')
+    ->with([
+        'warning' => 'Supplier "' .
+            $supplier->name .
+            '" masih digunakan oleh ' .
+            $totalProduct .
+            ' produk. Silakan pindahkan supplier pada seluruh produk terlebih dahulu sebelum menonaktifkannya.',
+
+        'supplier_id' => $supplier->id,
+    ]);
+        }
+
+        $supplier->update([
+            'is_active' => false
+        ]);
+
+        $this->activityService->log(
+
+            'Supplier',
+
+            'DEACTIVATE',
+
+            'Menonaktifkan supplier ' . $supplier->name,
+
+            $supplier
+
+        );
+
+        return redirect()
+            ->route('suppliers.index')
+            ->with(
+                'success',
+                'Supplier berhasil dinonaktifkan.'
+            );
+    }
+
+    public function show(Supplier $supplier)
+{
+    $supplier->loadCount('products');
+
+    $products = Product::with('category')
+        ->where('supplier_id', $supplier->id)
+        ->orderBy('name')
+        ->paginate(10);
+
+    return view(
+        'pages.supplier.show',
+        compact(
+            'supplier',
+            'products'
+        )
+    );
+}
 
     public function destroy(Supplier $supplier)
     {
@@ -133,7 +237,7 @@ class SupplierController extends Controller
             ->route('suppliers.index')
             ->with(
                 'success',
-                'Supplier deleted successfully.'
+                'Supplier berhasil dihapus.'
             );
     }
 }

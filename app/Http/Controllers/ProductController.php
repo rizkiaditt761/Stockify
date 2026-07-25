@@ -62,6 +62,15 @@ class ProductController extends Controller
 
         }
 
+        if ($request->filled('supplier')) {
+
+            $query->where(
+                'supplier_id',
+                $request->supplier
+            );
+
+        }
+
 
         if ($request->filled('category')) {
 
@@ -93,8 +102,26 @@ class ProductController extends Controller
 
         }
 
-
         $totalProduct = $products->total();
+
+$activeProduct = Product::where(
+    'is_active',
+    true
+)->count();
+
+$inactiveProduct = Product::where(
+    'is_active',
+    false
+)->count();
+
+$suppliers = Supplier::where(
+    'is_active',
+    true
+)
+->orderBy('name')
+->get();
+
+
 
 
         return view(
@@ -102,8 +129,11 @@ class ProductController extends Controller
             compact(
                 'products',
                 'categories',
-                'activeCategory',
-                'totalProduct'
+                'suppliers',
+                'totalProduct',
+                'activeProduct',
+                'inactiveProduct',
+                'activeCategory'
             )
         );
     }
@@ -114,7 +144,12 @@ class ProductController extends Controller
     {
         $categories = Category::all();
 
-        $suppliers = Supplier::all();
+        $suppliers = Supplier::where(
+    'is_active',
+    true
+)
+->orderBy('name')
+->get();
 
 
         return view(
@@ -279,7 +314,12 @@ public function store(ProductRequest $request)
 
         $categories = Category::all();
 
-        $suppliers = Supplier::all();
+       $suppliers = Supplier::where(
+    'is_active',
+    true
+)
+->orderBy('name')
+->get();
 
 
         return view(

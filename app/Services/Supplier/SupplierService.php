@@ -7,5 +7,5 @@ use App\Services\Supplier\SupplierService;
 
 interface SupplierService extends BaseService
 {
-    // Write something awesome :)
+    public function getSupplierData(array $filters);
 }

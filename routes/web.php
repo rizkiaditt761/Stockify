@@ -18,7 +18,15 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActivityController;
 
 
+Route::patch(
+    '/suppliers/{supplier}/activate',
+    [SupplierController::class, 'activate']
+)->name('suppliers.activate');
 
+Route::patch(
+    '/suppliers/{supplier}/deactivate',
+    [SupplierController::class, 'deactivate']
+)->name('suppliers.deactivate');
 
 Route::middleware('role:admin,manager,staff')->group(function () {
 
@@ -133,7 +141,7 @@ Route::get(
         Route::resource(
             'suppliers',
             SupplierController::class
-        )->except(['index', 'show']);
+        )->except(['index']);
 
             /*
         |--------------------------------------------------------------------------

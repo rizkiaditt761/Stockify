@@ -18,5 +18,11 @@ class SupplierServiceImplement extends Service implements SupplierService{
       $this->mainRepository = $mainRepository;
     }
 
+    public function getSupplierData(array $filters)
+{
+    return $this->mainRepository
+        ->getSupplierData($filters);
+}
+
     // Define your custom methods :)
 }

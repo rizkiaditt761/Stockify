@@ -6,5 +6,5 @@ use LaravelEasyRepository\Repository;
 
 interface SupplierRepository extends Repository
 {
-    // Write something awesome :)
+    public function getSupplierData(array $filters);
 }

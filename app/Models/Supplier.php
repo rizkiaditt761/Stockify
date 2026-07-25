@@ -14,6 +14,11 @@ class Supplier extends Model
     'address',
     'phone',
     'email',
+    'is_active',
+    ];
+
+    protected $casts = [
+    'is_active' => 'boolean',
     ];
 
     public function products()
