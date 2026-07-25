@@ -25,169 +25,190 @@ class StockTransactionController extends Controller
     }
 
     public function index(Request $request)
-    {
-        $query = StockTransaction::with([
-            'product',
-            'user',
-            'confirmedBy'
-        ]);
+{
+    $query = StockTransaction::with([
+        'product',
+        'user',
+        'confirmedBy'
+    ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Search
-        |--------------------------------------------------------------------------
-        */
 
-        if ($request->filled('search')) {
 
-            $search = $request->search;
+    /*
+    |--------------------------------------------------------------------------
+    | SEARCH
+    |--------------------------------------------------------------------------
+    */
 
-            $query->where(function ($q) use ($search) {
+    if($request->search){
 
-                $q->whereHas('product', function ($product) use ($search) {
+        $search = $request->search;
 
-                    $product->where(
-                        'name',
-                        'like',
-                        "%{$search}%"
-                    );
+        $query->where(function($q) use ($search){
 
-                })
+            $q->whereHas('product', function($product) use ($search){
 
-                ->orWhereHas('user', function ($user) use ($search) {
-
-                    $user->where(
-                        'name',
-                        'like',
-                        "%{$search}%"
-                    );
-
-                })
-
-                ->orWhere(
-                    'notes',
-                    'like',
-                    "%{$search}%"
-                );
+                $product->where('name','like','%'.$search.'%');
 
             });
 
-        }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Status
-        |--------------------------------------------------------------------------
-        */
+            $q->orWhereHas('user', function($user) use ($search){
 
-        if ($request->filled('status')) {
+                $user->where('name','like','%'.$search.'%');
 
-            $query->where(
-                'status',
-                $request->status
+            });
+
+
+            $q->orWhere(
+                'notes',
+                'like',
+                '%'.$search.'%'
             );
 
-        }
+        });
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Type
-        |--------------------------------------------------------------------------
-        */
-
-        if ($request->filled('type')) {
-
-            $query->where(
-                'type',
-                $request->type
-            );
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Tanggal
-        |--------------------------------------------------------------------------
-        */
-
-        if ($request->filled('start_date')) {
-
-            $query->whereDate(
-                'transaction_date',
-                '>=',
-                $request->start_date
-            );
-
-        }
-
-        if ($request->filled('end_date')) {
-
-            $query->whereDate(
-                'transaction_date',
-                '<=',
-                $request->end_date
-            );
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Summary Card
-        |--------------------------------------------------------------------------
-        */
-
-        $summary = clone $query;
-
-        $totalTransaction = (clone $summary)->count();
-
-        $totalPending = (clone $summary)
-            ->where('status', 'Pending')
-            ->count();
-
-        $totalCompleted = (clone $summary)
-            ->where('status', 'Completed')
-            ->count();
-
-        $totalRejected = (clone $summary)
-            ->where('status', 'Rejected')
-            ->count();
-
-        $totalCancelled = (clone $summary)
-            ->where('status', 'Cancelled')
-            ->count();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Table
-        |--------------------------------------------------------------------------
-        */
-
-                $transactions = $query
-                    ->latest('transaction_date')
-                    ->paginate(10)
-                    ->withQueryString();
-
-        $activeType = $request->type;
-
-        $startDate = $request->start_date;
-
-        $endDate = $request->end_date;
-
-        return view(
-            'pages.stock_transaction.index',
-            compact(
-                'transactions',
-                'totalTransaction',
-                'totalPending',
-                'totalCompleted',
-                'totalRejected',
-                'totalCancelled',
-                'activeType',
-                'startDate',
-                'endDate'
-            )
-        );
     }
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | STATUS FILTER
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->status){
+
+        $query->where(
+            'status',
+            $request->status
+        );
+
+    }
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TYPE FILTER
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->type){
+
+        $query->where(
+            'type',
+            $request->type
+        );
+
+    }
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATE FILTER
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->start_date){
+
+        $query->whereDate(
+            'transaction_date',
+            '>=',
+            $request->start_date
+        );
+
+    }
+
+
+
+    if($request->end_date){
+
+        $query->whereDate(
+            'transaction_date',
+            '<=',
+            $request->end_date
+        );
+
+    }
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUMMARY CARD
+    |--------------------------------------------------------------------------
+    */
+
+
+    $totalTransaction = (clone $query)
+        ->count();
+
+
+
+    $totalPending = (clone $query)
+        ->where('status','Pending')
+        ->count();
+
+
+
+    $totalCompleted = (clone $query)
+        ->where('status','Completed')
+        ->count();
+
+
+
+    $totalRejected = (clone $query)
+        ->where('status','Rejected')
+        ->count();
+
+
+
+    $totalCancelled = (clone $query)
+        ->where('status','Cancelled')
+        ->count();
+
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TABLE DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $transactions = $query
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+
+
+
+
+    return view(
+        'pages.stock_transaction.index',
+        compact(
+            'transactions',
+            'totalTransaction',
+            'totalPending',
+            'totalCompleted',
+            'totalRejected',
+            'totalCancelled'
+        )
+    );
+}
 
     /*
 |--------------------------------------------------------------------------

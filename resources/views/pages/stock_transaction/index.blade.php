@@ -5,35 +5,132 @@
 <div class="p-6">
 
     {{-- Header --}}
-    <div class="mb-6 flex items-center justify-between">
-
-        <div>
-
-            <h1 class="text-3xl font-bold text-gray-800">
-                Stock Transaction
-            </h1>
-
-            <p class="mt-1 text-sm text-gray-500">
-                Monitoring seluruh transaksi stok barang.
-            </p>
-
-        </div>
+<div class="mb-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
 
-        {{-- Tambah hanya Manager --}}
+    <div>
+
+
+        <h1 class="text-3xl font-bold text-gray-800">
+
+            Stock Transaction
+
+        </h1>
+
+
+
+        <p class="mt-2 text-sm text-gray-500">
+
+            Monitoring seluruh transaksi stok barang.
+
+        </p>
+
+
+
+        <p class="mt-4 text-xl font-bold text-gray-500">
+
+            Total Transaksi :
+
+            <span class="font-bold text-xl text-blue-600">
+
+                {{ $totalTransaction }}
+
+            </span>
+
+
+        </p>
+
+
+
+    </div>
+
+
+
+
+
+    <div class="flex flex-col gap-3 md:items-end">
+
+
+
+        {{-- Search --}}
+
+        <form
+            method="GET"
+            class="flex items-center gap-2">
+
+
+            @if(request('status'))
+
+                <input
+                    type="hidden"
+                    name="status"
+                    value="{{ request('status') }}">
+
+            @endif
+
+
+
+            @if(request('type'))
+
+                <input
+                    type="hidden"
+                    name="type"
+                    value="{{ request('type') }}">
+
+            @endif
+
+
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari produk atau user..."
+                class="w-80 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500">
+
+
+
+            <button
+                type="submit"
+                class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700">
+
+
+                Cari
+
+
+            </button>
+
+
+        </form>
+
+
+
+
+
+        {{-- Tambah Manager --}}
+
         @if(auth()->user()->role == 'manager')
 
+
             <a href="{{ route('stock_transactions.create') }}"
-                class="inline-flex items-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+                class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+
 
                 + Tambah Transaksi
 
+
             </a>
+
 
         @endif
 
 
+
     </div>
+
+
+
+</div>
 
 
 
@@ -51,96 +148,365 @@
 
 
 
-    {{-- Summary Cards --}}
-    <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-5">
+        {{-- Status Filter Cards --}}
+<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
 
 
-        {{-- Total --}}
-        <div class="rounded-xl border border-blue-200 bg-blue-50 p-5">
 
-            <p class="text-sm font-medium text-blue-700">
-                Total Transaksi
-            </p>
+    {{-- Pending --}}
+    <a
+        href="{{ request('status') == 'Pending'
+            ? route('stock_transactions.index', request()->except('status'))
+            : route('stock_transactions.index', array_merge(request()->all(), ['status'=>'Pending']))
+        }}"
 
-            <h2 class="mt-2 text-4xl font-bold text-blue-700">
+        class="rounded-xl border p-6 transition-all
 
-                {{ $totalTransaction }}
+        {{ request('status') == 'Pending'
+            ? 'border-yellow-500 bg-yellow-50 shadow-lg'
+            : 'border-gray-200 bg-white hover:-translate-y-1 hover:shadow-lg'
+        }}">
 
-            </h2>
+
+        <div class="flex justify-between">
+
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Pending
+
+                </p>
+
+
+                <h2 class="mt-2 text-4xl font-bold text-yellow-500">
+
+                    {{ $totalPending }}
+
+                </h2>
+
+
+            </div>
+
+
+            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-100 text-2xl">
+
+                ⏳
+
+            </div>
+
+
+        </div>
+
+
+    </a>
+
+
+
+
+
+    {{-- Completed --}}
+    <a
+        href="{{ request('status') == 'Completed'
+            ? route('stock_transactions.index', request()->except('status'))
+            : route('stock_transactions.index', array_merge(request()->all(), ['status'=>'Completed']))
+        }}"
+
+        class="rounded-xl border p-6 transition-all
+
+        {{ request('status') == 'Completed'
+            ? 'border-green-500 bg-green-50 shadow-lg'
+            : 'border-gray-200 bg-white hover:-translate-y-1 hover:shadow-lg'
+        }}">
+
+
+        <div class="flex justify-between">
+
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Completed
+
+                </p>
+
+
+                <h2 class="mt-2 text-4xl font-bold text-green-600">
+
+                    {{ $totalCompleted }}
+
+                </h2>
+
+
+            </div>
+
+
+            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-2xl">
+
+                ✅
+
+            </div>
+
+
+        </div>
+
+
+    </a>
+
+
+
+
+
+
+
+    {{-- Rejected --}}
+    <a
+        href="{{ request('status') == 'Rejected'
+            ? route('stock_transactions.index', request()->except('status'))
+            : route('stock_transactions.index', array_merge(request()->all(), ['status'=>'Rejected']))
+        }}"
+
+        class="rounded-xl border p-6 transition-all
+
+        {{ request('status') == 'Rejected'
+            ? 'border-red-500 bg-red-50 shadow-lg'
+            : 'border-gray-200 bg-white hover:-translate-y-1 hover:shadow-lg'
+        }}">
+
+
+        <div class="flex justify-between">
+
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Rejected
+
+                </p>
+
+
+                <h2 class="mt-2 text-4xl font-bold text-red-600">
+
+                    {{ $totalRejected }}
+
+                </h2>
+
+
+            </div>
+
+
+            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-2xl">
+
+                ❌
+
+            </div>
+
+
+        </div>
+
+
+    </a>
+
+
+
+
+
+
+
+    {{-- Cancelled --}}
+    <a
+        href="{{ request('status') == 'Cancelled'
+            ? route('stock_transactions.index', request()->except('status'))
+            : route('stock_transactions.index', array_merge(request()->all(), ['status'=>'Cancelled']))
+        }}"
+
+        class="rounded-xl border p-6 transition-all
+
+        {{ request('status') == 'Cancelled'
+            ? 'border-gray-500 bg-gray-100 shadow-lg'
+            : 'border-gray-200 bg-white hover:-translate-y-1 hover:shadow-lg'
+        }}">
+
+
+        <div class="flex justify-between">
+
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Cancelled
+
+                </p>
+
+
+                <h2 class="mt-2 text-4xl font-bold text-gray-600">
+
+                    {{ $totalCancelled }}
+
+                </h2>
+
+
+            </div>
+
+
+            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-2xl">
+
+                🚫
+
+            </div>
+
+
+        </div>
+
+
+    </a>
+
+
+
+</div>
+
+
+
+
+
+    {{-- Additional Filter --}}
+<form
+    method="GET"
+    class="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+
+
+    {{-- Preserve Search --}}
+    @if(request('search'))
+
+        <input
+            type="hidden"
+            name="search"
+            value="{{ request('search') }}">
+
+    @endif
+
+
+
+    {{-- Preserve Status --}}
+    @if(request('status'))
+
+        <input
+            type="hidden"
+            name="status"
+            value="{{ request('status') }}">
+
+    @endif
+
+
+
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+
+
+        {{-- Type --}}
+        <div>
+
+
+            <label class="mb-2 block text-sm font-medium text-gray-700">
+
+                Jenis Transaksi
+
+            </label>
+
+
+
+            <select
+                name="type"
+                class="w-full rounded-lg border border-gray-300 p-2.5">
+
+
+                <option value="">
+
+                    Semua Jenis
+
+                </option>
+
+
+
+                <option value="IN"
+                    {{ request('type') == 'IN' ? 'selected' : '' }}>
+
+                    Stock In
+
+                </option>
+
+
+
+
+                <option value="OUT"
+                    {{ request('type') == 'OUT' ? 'selected' : '' }}>
+
+                    Stock Out
+
+                </option>
+
+
+
+            </select>
+
 
         </div>
 
 
 
 
-        {{-- Pending --}}
-        <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-5">
 
-            <p class="text-sm font-medium text-yellow-700">
-                Pending
-            </p>
+        {{-- Start Date --}}
+        <div>
 
-            <h2 class="mt-2 text-4xl font-bold text-yellow-700">
 
-                {{ $totalPending }}
+            <label class="mb-2 block text-sm font-medium text-gray-700">
 
-            </h2>
+                Tanggal Mulai
+
+            </label>
+
+
+
+            <input
+                type="date"
+                name="start_date"
+                value="{{ request('start_date') }}"
+                class="w-full rounded-lg border border-gray-300 p-2.5">
+
 
         </div>
 
 
 
 
-        {{-- Confirmed --}}
-        <div class="rounded-xl border border-green-200 bg-green-50 p-5">
 
-            <p class="text-sm font-medium text-green-700">
-                Completed
-            </p>
+        {{-- End Date --}}
+        <div>
 
-            <h2 class="mt-2 text-4xl font-bold text-green-700">
 
-                {{ $totalCompleted }}
+            <label class="mb-2 block text-sm font-medium text-gray-700">
 
-            </h2>
+                Tanggal Akhir
+
+            </label>
+
+
+
+            <input
+                type="date"
+                name="end_date"
+                value="{{ request('end_date') }}"
+                class="w-full rounded-lg border border-gray-300 p-2.5">
+
 
         </div>
 
-
-
-
-        {{-- Rejected --}}
-        <div class="rounded-xl border border-red-200 bg-red-50 p-5">
-
-            <p class="text-sm font-medium text-red-700">
-                Rejected
-            </p>
-
-            <h2 class="mt-2 text-4xl font-bold text-red-700">
-
-                {{ $totalRejected }}
-
-            </h2>
-
-        </div>
-
-
-
-
-        {{-- Cancelled --}}
-        <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
-
-            <p class="text-sm font-medium text-gray-700">
-                Cancelled
-            </p>
-
-            <h2 class="mt-2 text-4xl font-bold text-gray-700">
-
-                {{ $totalCancelled }}
-
-            </h2>
-
-        </div>
 
 
     </div>
@@ -149,218 +515,39 @@
 
 
 
+    <div class="mt-5 flex justify-end gap-3">
 
-    {{-- Search & Filter --}}
-    <form
-        method="GET"
-        class="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
 
+        <button
+            type="submit"
+            class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
 
+            Terapkan Filter
 
 
-            {{-- Search --}}
-            <div class="md:col-span-2">
+        </button>
 
-                <label class="mb-2 block text-sm font-medium text-gray-700">
 
-                    Search
 
-                </label>
 
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Cari produk, user atau catatan..."
-                    class="w-full rounded-lg border border-gray-300 p-2.5">
+        <a href="{{ route('stock_transactions.index') }}"
+            class="rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700">
 
-            </div>
 
+            Reset
 
 
+        </a>
 
-            {{-- Status --}}
-            <div>
 
-                <label class="mb-2 block text-sm font-medium text-gray-700">
 
-                    Status
+    </div>
 
-                </label>
 
 
-                <select
-                    name="status"
-                    class="w-full rounded-lg border border-gray-300 p-2.5">
-
-
-                    <option value="">
-                        Semua Status
-                    </option>
-
-
-                    <option value="Pending"
-                        {{ request('status') == 'Pending' ? 'selected' : '' }}>
-
-                        Pending
-
-                    </option>
-
-
-                    <option value="Completed"
-                        {{ request('status') == 'Completed' ? 'selected' : '' }}>
-
-                        Completed
-
-                    </option>
-
-
-                    <option value="Rejected"
-                        {{ request('status') == 'Rejected' ? 'selected' : '' }}>
-
-                        Rejected
-
-                    </option>
-
-
-                    <option value="Cancelled"
-                        {{ request('status') == 'Cancelled' ? 'selected' : '' }}>
-
-                        Cancelled
-
-                    </option>
-
-
-                </select>
-
-
-            </div>
-
-
-
-
-
-            {{-- Type --}}
-            <div>
-
-                <label class="mb-2 block text-sm font-medium text-gray-700">
-
-                    Jenis
-
-                </label>
-
-
-                <select
-                    name="type"
-                    class="w-full rounded-lg border border-gray-300 p-2.5">
-
-
-                    <option value="">
-                        Semua Jenis
-                    </option>
-
-
-                    <option value="IN"
-                        {{ request('type') == 'IN' ? 'selected' : '' }}>
-
-                        Stock In
-
-                    </option>
-
-
-                    <option value="OUT"
-                        {{ request('type') == 'OUT' ? 'selected' : '' }}>
-
-                        Stock Out
-
-                    </option>
-
-
-                </select>
-
-
-            </div>
-
-
-
-
-            {{-- Start Date --}}
-            <div>
-
-                <label class="mb-2 block text-sm font-medium text-gray-700">
-
-                    Tanggal Awal
-
-                </label>
-
-
-                <input
-                    type="date"
-                    name="start_date"
-                    value="{{ request('start_date') }}"
-                    class="w-full rounded-lg border border-gray-300 p-2.5">
-
-
-            </div>
-
-
-
-
-            {{-- End Date --}}
-            <div>
-
-                <label class="mb-2 block text-sm font-medium text-gray-700">
-
-                    Tanggal Akhir
-
-                </label>
-
-
-                <input
-                    type="date"
-                    name="end_date"
-                    value="{{ request('end_date') }}"
-                    class="w-full rounded-lg border border-gray-300 p-2.5">
-
-
-            </div>
-
-
-
-        </div>
-
-
-
-
-        <div class="mt-5 flex justify-end gap-3">
-
-
-            <button
-                type="submit"
-                class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
-
-                Filter
-
-            </button>
-
-
-
-            <a href="{{ route('stock_transactions.index') }}"
-                class="rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700">
-
-                Reset
-
-            </a>
-
-
-        </div>
-
-
-
-    </form>
+</form>
 
         {{-- Table --}}
     <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">

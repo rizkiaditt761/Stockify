@@ -5,14 +5,7 @@
     <div class="h-full flex flex-col">
 
 
-        {{-- Header --}}
-        <div class="px-6 pt-6 pb-3">
-
-            <h2 class="text-xs font-semibold tracking-widest uppercase text-gray-400">
-                Main Menu
-            </h2>
-
-        </div>
+        
 
 
         {{-- Menu --}}
