@@ -18,8 +18,8 @@
 
     @if(isset($page->params['robots']))
         <meta name="robots" content="{{ $page->params['robots'] }}">
-    @endif
-
+    @endif   
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 

@@ -32,10 +32,19 @@
                 type="button"
                 class="flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-gray-100 transition-all duration-200">
 
-                <img
-                    src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff"
-                    class="w-10 h-10 rounded-full ring-2 ring-blue-500 object-cover">
+                @if(auth()->user()->avatar)
 
+                    <img
+                        src="{{ asset('storage/' . auth()->user()->avatar) }}"
+                        class="w-10 h-10 rounded-full ring-2 ring-blue-500 object-cover">
+
+                @else
+
+                    <img
+                        src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff"
+                        class="w-10 h-10 rounded-full ring-2 ring-blue-500 object-cover">
+
+                @endif
                 <div class="hidden md:block text-left">
 
                     <p class="font-semibold text-gray-800 leading-none">
@@ -78,10 +87,19 @@
 
                     <div class="flex items-center gap-3">
 
+                    @if(auth()->user()->avatar)
+
+                        <img
+                            src="{{ asset('storage/' . auth()->user()->avatar) }}"
+                            class="w-12 h-12 rounded-full object-cover">
+
+                    @else
+
                         <img
                             src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff"
                             class="w-12 h-12 rounded-full">
 
+                    @endif
                         <div>
 
                             <h3 class="font-semibold text-gray-800">

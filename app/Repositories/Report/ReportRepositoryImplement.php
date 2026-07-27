@@ -196,66 +196,60 @@ class ReportRepositoryImplement extends Eloquent implements ReportRepository
 
             if ($search) {
 
-                $transactionQuery->where(function ($query) use ($search) {
+    $transactionQuery->where(function ($query) use ($search) {
 
 
-                    $query->whereHas(
-                        'product',
-                        function ($product) use ($search) {
+        $query->whereHas(
+            'product',
+            function ($product) use ($search) {
 
-                            $product->where(
-                                'name',
-                                'like',
-                                "%{$search}%"
-                            )
+                $product->where(
+                    'name',
+                    'like',
+                    "%{$search}%"
+                )
 
-                            ->orWhere(
-                                'sku',
-                                'like',
-                                "%{$search}%"
-                            );
-
-                        }
-                    )
-
-
-                    ->orWhereHas(
-                        'user',
-                        function ($user) use ($search) {
-
-                            $user->where(
-                                'name',
-                                'like',
-                                "%{$search}%"
-                            )
-
-                            ->orWhere(
-                                'role',
-                                'like',
-                                "%{$search}%"
-                            );
-
-                        }
-                    )
-
-
-                    ->orWhere(
-                        'status',
-                        'like',
-                        "%{$search}%"
-                    )
-
-
-                    ->orWhere(
-                        'type',
-                        'like',
-                        "%{$search}%"
-                    );
-
-
-                });
+                ->orWhere(
+                    'sku',
+                    'like',
+                    "%{$search}%"
+                );
 
             }
+        )
+
+
+        ->orWhereHas(
+            'user',
+            function ($user) use ($search) {
+
+                $user->where(
+                    'name',
+                    'like',
+                    "%{$search}%"
+                );
+
+            }
+        )
+
+
+        ->orWhere(
+            'status',
+            'like',
+            "%{$search}%"
+        )
+
+
+        ->orWhere(
+            'type',
+            'like',
+            "%{$search}%"
+        );
+
+
+    });
+
+}
 
 
 
@@ -322,60 +316,48 @@ class ReportRepositoryImplement extends Eloquent implements ReportRepository
             |--------------------------------------------------------------------------
             */
 
-            if ($search) {
+ if ($search) {
+
+    $activityQuery->where(function ($query) use ($search) {
 
 
-                $activityQuery->where(function ($query) use ($search) {
+        $query->where(
+            'module',
+            'like',
+            "%{$search}%"
+        )
 
 
-                    $query->where(
-                        'module',
-                        'like',
-                        "%{$search}%"
-                    )
+        ->orWhere(
+            'action',
+            'like',
+            "%{$search}%"
+        )
 
 
-                    ->orWhere(
-                        'action',
-                        'like',
-                        "%{$search}%"
-                    )
+        ->orWhereHas(
+            'user',
+            function ($user) use ($search) {
 
+                $user->where(
+                    'name',
+                    'like',
+                    "%{$search}%"
+                )
 
-                    ->orWhere(
-                        'description',
-                        'like',
-                        "%{$search}%"
-                    )
-
-
-                    ->orWhereHas(
-                        'user',
-                        function ($user) use ($search) {
-
-
-                            $user->where(
-                                'name',
-                                'like',
-                                "%{$search}%"
-                            )
-
-
-                            ->orWhere(
-                                'role',
-                                'like',
-                                "%{$search}%"
-                            );
-
-
-                        }
-                    );
-
-
-                });
-
+                ->orWhere(
+                    'role',
+                    'like',
+                    "%{$search}%"
+                );
 
             }
+        );
+
+
+    });
+
+}
 
 
 

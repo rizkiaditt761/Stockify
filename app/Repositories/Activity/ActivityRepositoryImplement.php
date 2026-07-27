@@ -125,7 +125,7 @@ class ActivityRepositoryImplement extends Eloquent implements ActivityRepository
 
         return $query
             ->latest()
-            ->paginate(15)
+            ->paginate(10)
             ->withQueryString();
 
     }

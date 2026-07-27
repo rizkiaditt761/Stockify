@@ -17,6 +17,11 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActivityController;
 
+Route::delete(
+    '/profile/avatar',
+    [ProfileController::class, 'destroyAvatar']
+)
+->name('profile.avatar.delete');
 
 Route::patch(
     '/suppliers/{supplier}/activate',

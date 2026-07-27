@@ -368,61 +368,70 @@
 
 
                         {{-- User --}}
-                        <td class="px-6 py-4">
+<td class="px-6 py-4">
 
 
-                            <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3">
 
 
-                                <div
-                                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+        @if($user->avatar)
 
 
-                                    <span class="font-semibold text-blue-700">
+            <img
+                src="{{ asset('storage/' . $user->avatar) }}"
+                class="h-10 w-10 rounded-full object-cover border border-gray-200 shadow-sm">
 
 
-                                        {{ strtoupper(substr($user->name,0,1)) }}
+        @else
 
 
-                                    </span>
+            <div
+                class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
 
 
-                                </div>
+                <span class="font-semibold text-blue-700">
 
 
-
-                                <div>
-
-
-                                    <div class="font-semibold text-gray-800">
+                    {{ strtoupper(substr($user->name,0,1)) }}
 
 
-                                        {{ $user->name }}
+                </span>
 
 
-                                    </div>
+            </div>
 
 
-
-                                    <div class="text-xs text-gray-500 mt-1">
-
-
-                                        ID :
-                                        {{ $user->id }}
-
-
-                                    </div>
+        @endif
 
 
 
-                                </div>
+
+        <div>
 
 
-                            </div>
+            <div class="font-semibold text-gray-800">
+
+                {{ $user->name }}
+
+            </div>
 
 
 
-                        </td>
+            <div class="text-xs text-gray-500 mt-1">
+
+                ID :
+                {{ $user->id }}
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</td>
 
 
 
