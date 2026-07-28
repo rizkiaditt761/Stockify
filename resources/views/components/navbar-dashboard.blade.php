@@ -5,19 +5,33 @@
         {{-- Logo --}}
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
 
+            @if($appSetting?->logo)
+
             <img
-                src="{{ asset('static/images/logo.svg') }}"
-                class="w-10 h-10"
-                alt="Stockify">
+            src="{{ asset('storage/'.$appSetting->logo) }}"
+            class="h-12 w-12  object-cover">
+
+            @else
+
+            <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold">
+
+            S
+
+            </div>
+
+            @endif
 
             <div>
 
-                <h1 class="text-xl font-bold text-gray-800">
-                    Stockify
+                <h1 class="text-xl font-bold">
+
+                    {{ $appSetting->app_name ?? 'Stockify' }}
+
                 </h1>
 
                 <p class="text-xs text-gray-500">
-                    Warehouse Management
+                    {{ $appSetting->description ?? 'Warehouse Management' }}
                 </p>
 
             </div>
@@ -153,11 +167,12 @@
 
                     </a>
 
-                    <button
-                        disabled
-                        class="flex w-full items-center gap-3 px-5 py-3 text-gray-400 cursor-not-allowed">
+                    @if(auth()->user()->role === 'admin')
 
-                        <svg class="w-5 h-5"
+                    <a href="{{ route('settings.index') }}"
+                        class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition">
+
+                        <svg class="w-5 h-5 text-gray-500"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="2"
@@ -165,19 +180,21 @@
 
                             <path stroke-linecap="round"
                                 stroke-linejoin="round"
-                                d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4s-1.79-4-4-4zm8 4a8 8 0 01-.24 1.95l2.06 1.6l-2 3.46l-2.43-.98a8.2 8.2 0 01-3.37 1.95L13.5 22h-3l-.52-2.02a8.2 8.2 0 01-3.37-1.95l-2.43.98l-2-3.46l2.06-1.6A8 8 0 014 12c0-.67.08-1.32.24-1.95L2.18 8.45l2-3.46l2.43.98A8.2 8.2 0 019.98 4L10.5 2h3l.52 2.02a8.2 8.2 0 013.37 1.95l2.43-.98l2 3.46l-2.06 1.6c.16.63.24 1.28.24 1.95z"/>
+                                d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4s-1.79-4-4-4zm8 4a8 8 0 01-.24 1.95l2.06 1.6l-2 3.46l-2.43-.98a8.2 8.2 0 01-3.37 1.95L13.5 22h-3l-.52-2.02a8.2 8.2 0 01-3.37-1.95l-2.43.98l-2-3.46l2.06-1.6A8 8 0 014 12c0-.67.08-1.32.24-1.95L2.18 8.45l2-3.46l2.43.98A8.2 8.2 0 019.98 4L10.5 2h3l.52 2.02a8.2 0 013.37 1.95l2.43-.98l2 3.46l-2.06 1.6c.16.63.24 1.28.24 1.95z"/>
 
                         </svg>
 
-                        Settings
-
-                        <span class="ml-auto text-xs">
-
-                            Soon
-
+                        <span class="text-gray-700">
+                            Settings
                         </span>
 
-                    </button>
+                    </a>
+
+                @endif
+                    
+                                
+
+                        
 
                 </div>
 

@@ -10,7 +10,19 @@
     <meta name="author" content="#">
     <meta name="generator" content="Laravel">
 
-    <title>Stockify Dashboard</title>
+    <title>
+        {{ $appSetting->app_name ?? 'Stockify' }}
+    </title>
+
+
+    @if($appSetting?->favicon)
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="{{ asset('storage/'.$appSetting->favicon) }}">
+
+    @endif
 
     @vite(['resources/css/app.css','resources/js/app.js'])
 

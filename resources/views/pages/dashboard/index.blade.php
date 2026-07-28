@@ -680,14 +680,10 @@
                 </div>
 
 
-                <div class="rounded-2xl bg-white/20 p-4 transition group-hover:scale-110">
+                <div>
 
 
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-8 w-8"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor">
+                    
 
                         <path stroke-linecap="round"
                             stroke-linejoin="round"
@@ -772,22 +768,22 @@
 
 
         {{-- Input Transaksi --}}
-        <a href="{{ route('stock_transactions.create') }}"
-            class="group rounded-3xl bg-gradient-to-r from-orange-500 to-red-500 p-7 text-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+        <a href="{{ route('stock_transactions.index') }}"
+            class="group rounded-3xl bg-gradient-to-r from-blue-500 to-blue-700 p-7 text-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
 
 
             <h3 class="text-xl font-bold">
-                Input Transaksi
+                Transaksi
             </h3>
 
 
-            <p class="mt-2 text-sm text-orange-100">
-                Catat stok masuk dan keluar.
+            <p class="mt-2 text-sm text-white">
+                Cek Transaksi yang Harus di Konfirmasi
             </p>
 
 
-            <div class="mt-6 text-sm font-semibold text-orange-100">
-                Mulai input →
+            <div class="mt-6 text-sm font-semibold text-white">
+                Cek Sekarang →
             </div>
 
 
@@ -797,7 +793,7 @@
 
         {{-- Monitoring --}}
         <a href="{{ route('stock.monitoring.index') }}"
-            class="group rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 p-7 text-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+            class="group rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-700 p-7 text-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
 
 
             <h3 class="text-xl font-bold">
@@ -805,12 +801,12 @@
             </h3>
 
 
-            <p class="mt-2 text-sm text-blue-100">
+            <p class="mt-2 text-sm text-white">
                 Cek kondisi stok.
             </p>
 
 
-            <div class="mt-6 text-sm font-semibold text-blue-100">
+            <div class="mt-6 text-sm font-semibold text-white">
                 Monitoring →
             </div>
 
@@ -822,7 +818,7 @@
 
         {{-- Stock Opname --}}
         <a href="{{ route('stock.opname.index') }}"
-            class="group rounded-3xl bg-gradient-to-r from-purple-600 to-pink-700 p-7 text-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+            class="group rounded-3xl bg-gradient-to-r from-indigo-700 to-indigo-800 p-7 text-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
 
 
             <h3 class="text-xl font-bold">
@@ -830,12 +826,12 @@
             </h3>
 
 
-            <p class="mt-2 text-sm text-purple-100">
+            <p class="mt-2 text-sm text-white">
                 Cek stok fisik gudang.
             </p>
 
 
-            <div class="mt-6 text-sm font-semibold text-purple-100">
+            <div class="mt-6 text-sm font-semibold text-white">
                 Mulai opname →
             </div>
 

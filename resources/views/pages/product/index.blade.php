@@ -90,7 +90,7 @@
         name="search"
         value="{{ request('search') }}"
         placeholder="Cari produk..."
-        class="border rounded-lg px-4 py-2 w-72">
+        class="border rounded-lg px-4 py-2 w-60">
 
     {{-- Filter Kategori --}}
     <select
@@ -154,7 +154,7 @@
         @if(request('search') || request('category'))
 
             <a href="{{ route('products.index') }}"
-                class="bg-gray-300 text-black px-5 py-2 rounded-lg hover:bg-gray-400">
+                class="rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700">
 
                 Reset
 

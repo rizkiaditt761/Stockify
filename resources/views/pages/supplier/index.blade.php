@@ -19,25 +19,30 @@
 
         </div>
 
-        <a href="{{ route('suppliers.create') }}"
-            class="inline-flex items-center gap-2 mt-4 md:mt-0 px-5 py-3 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow">
+        @if(auth()->user()->role == 'admin')
 
-            <svg xmlns="http://www.w3.org/2000/svg"
-                class="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
+            <a href="{{ route('suppliers.create') }}"
+                class="inline-flex items-center gap-2 mt-4 md:mt-0 px-5 py-3 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow">
 
-                <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 4v16m8-8H4"/>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
 
-            </svg>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4v16m8-8H4"/>
 
-            Tambah Supplier
+                </svg>
 
-        </a>
+                Tambah Supplier
+
+            </a>
+
+            @endif
 
     </div>
 
@@ -204,7 +209,7 @@
 
         <a
             href="{{ route('suppliers.index') }}"
-            class="rounded-lg bg-gray-300 px-5 py-2 text-black hover:bg-gray-400">
+            class="rounded-lg bg-gray-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700">
 
             Reset
 
@@ -247,10 +252,13 @@
                             Status
                         </th>
 
+                        @if(auth()->user()->role == 'admin')
+
                         <th class="px-6 py-4 text-center">
                             Aksi
                         </th>
 
+                        @endif
                     </tr>
 
                 </thead>
@@ -315,13 +323,13 @@
 
 
     {{-- Total Product --}}
-    <td class="px-6 py-4">
+    <td class="px-6 py-4 ">
 
         <span
             class="inline-flex items-center
             px-3 py-1 rounded-full
             bg-blue-100 text-blue-700
-            font-semibold">
+            font-semibold -ml-3">
 
             {{ $supplier->products_count }}
 
@@ -334,11 +342,11 @@
 
 
     {{-- Status --}}
-    <td class="px-6 py-4 text-center">
+    <td class="px-6 py-4 justify-start">
 
     @if($supplier->is_active)
 
-        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 -ml-1">
 
             Active
 
@@ -346,7 +354,7 @@
 
     @else
 
-        <span class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
+        <span class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 -ml-2">
 
             Inactive
 
@@ -359,7 +367,9 @@
 
 
     {{-- Action --}}
-    <td class="px-6 py-4 text-center">
+    @if(auth()->user()->role == 'admin')
+
+<td class="px-6 py-4 text-center">
 
     <div class="flex justify-start gap-2">
 
@@ -423,6 +433,8 @@
     </div>
 
 </td>
+
+@endif
 
 </tr>
 

@@ -7,7 +7,7 @@
         </p>
 
         <p class="text-sm text-gray-500 mt-1">
-            Warehouse Management System
+            {{ $appSetting->footer_text ?? 'Management Gudang' }}
         </p>
 
     </div>

@@ -16,6 +16,28 @@ use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\SettingController;
+
+Route::middleware('auth')->group(function(){
+
+
+    Route::get(
+        '/settings',
+        [SettingController::class,'index']
+    )
+    ->name('settings.index');
+
+
+
+    Route::patch(
+        '/settings',
+        [SettingController::class,'update']
+    )
+    ->name('settings.update');
+
+
+});
+
 
 Route::delete(
     '/profile/avatar',
