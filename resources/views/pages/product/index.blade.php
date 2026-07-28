@@ -356,7 +356,7 @@
                                         <form
                                             action="{{ route('products.deactivate', $product->id) }}"
                                             method="POST"
-                                            onsubmit="return confirm('Nonaktifkan produk ini?')">
+                                            class="stockify-confirm">
 
                                             @csrf
                                             @method('PATCH')
@@ -376,7 +376,7 @@
         <form
             action="{{ route('products.activate', $product->id) }}"
             method="POST"
-            onsubmit="return confirm('Aktifkan kembali produk ini?')">
+            class="stockify-confirm">
 
             @csrf
             @method('PATCH')

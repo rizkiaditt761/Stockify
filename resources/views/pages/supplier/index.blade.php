@@ -101,59 +101,7 @@
 
 
 
-    {{-- Success --}}
-    @if(session('success'))
-
-    <div class="mb-5 p-4 rounded-xl bg-green-100 text-green-700 border border-green-200">
-
-        {{ session('success') }}
-
-    </div>
-
-    @endif
-
-
-
-{{-- Warning --}}
-@if(session('warning'))
-
-<div class="mb-5 rounded-xl border border-yellow-300 bg-yellow-50 p-5">
-
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-
-        <div>
-
-            <h3 class="font-semibold text-yellow-800">
-
-                ⚠ Supplier tidak dapat dinonaktifkan
-
-            </h3>
-
-            <p class="mt-2 text-sm text-yellow-700">
-
-                {{ session('warning') }}
-
-            </p>
-
-        </div>
-
-        @if(session('supplier_id'))
-
-        <a
-            href="{{ route('products.index', ['supplier' => session('supplier_id')]) }}"
-            class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-yellow-600 text-white hover:bg-yellow-700">
-
-            Kelola Produk →
-
-        </a>
-
-        @endif
-
-    </div>
-
-</div>
-
-@endif
+   
 
 
 
@@ -396,7 +344,7 @@
             <form
                 action="{{ route('suppliers.deactivate',$supplier->id) }}"
                 method="POST"
-                onsubmit="return confirm('Nonaktifkan supplier ini?')">
+                class="stockify-confirm">
 
                 @csrf
                 @method('PATCH')
@@ -414,8 +362,8 @@
 
             <form
                 action="{{ route('suppliers.activate',$supplier->id) }}"
-                method="POST">
-
+                method="POST"
+                class="stockify-confirm">
                 @csrf
                 @method('PATCH')
 

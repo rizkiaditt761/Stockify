@@ -134,16 +134,7 @@
 
 
 
-    {{-- Alert --}}
-    @if(session('success'))
-
-        <div class="mb-5 rounded-lg border border-green-200 bg-green-50 p-4 text-green-700">
-
-            {{ session('success') }}
-
-        </div>
-
-    @endif
+    
 
 
 
@@ -816,13 +807,13 @@
 
             <form
                 action="{{ route('stock_transactions.cancel',$transaction->id) }}"
-                method="POST">
-
+                method="POST"
+                class="stockify-confirm">
                 @csrf
                 @method('PATCH')
 
                 <button
-                    onclick="return confirm('Batalkan transaksi ini?')"
+                    
                     class="w-20 rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700">
 
                     Cancel
@@ -840,13 +831,14 @@
 
             <form
                 action="{{ route('stock_transactions.confirm',$transaction->id) }}"
-                method="POST">
+                method="POST" 
+                class="stockify-confirm">
 
                 @csrf
                 @method('PUT')
 
                 <button
-                    onclick="return confirm('Konfirmasi transaksi ini?')"
+                 
                     class="w-20 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700">
 
                     Confirm
@@ -967,7 +959,8 @@
 
         <form
             id="rejectForm"
-            method="POST">
+            method="POST"
+            class="stockify-confirm">
 
 
             @csrf
@@ -1011,7 +1004,8 @@
 
 
                 <button
-                    class="rounded-lg bg-red-600 px-4 py-2 text-white">
+                    class="rounded-lg bg-red-600 px-4 py-2 text-white "
+                    >
 
 
                     Reject

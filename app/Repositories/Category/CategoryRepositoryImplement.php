@@ -5,13 +5,8 @@ namespace App\Repositories\Category;
 use LaravelEasyRepository\Implementations\Eloquent;
 use App\Models\Category;
 
-class CategoryRepositoryImplement extends Eloquent implements CategoryRepository{
-
-    /**
-    * Model class to be used in this repository for the common methods inside Eloquent
-    * Don't remove or change $this->model variable name
-    * @property Model|mixed $model;
-    */
+class CategoryRepositoryImplement extends Eloquent implements CategoryRepository
+{
     protected $model;
 
     public function __construct(Category $model)
@@ -19,5 +14,41 @@ class CategoryRepositoryImplement extends Eloquent implements CategoryRepository
         $this->model = $model;
     }
 
-    // Write something awesome :)
+    /**
+     * Cek apakah kategori masih memiliki produk.
+     */
+    public function hasProducts($id)
+    {
+        $category = $this->model->findOrFail($id);
+
+        return $category->products()->count() > 0;
+    }
+
+    /**
+     * Nonaktifkan kategori.
+     */
+    public function deactivate($id)
+    {
+        $category = $this->model->findOrFail($id);
+
+        $category->update([
+            'is_active' => false,
+        ]);
+
+        return $category;
+    }
+
+    /**
+     * Aktifkan kembali kategori.
+     */
+    public function activate($id)
+    {
+        $category = $this->model->findOrFail($id);
+
+        $category->update([
+            'is_active' => true,
+        ]);
+
+        return $category;
+    }
 }

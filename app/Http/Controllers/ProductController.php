@@ -142,7 +142,9 @@ $suppliers = Supplier::where(
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::where('is_active', true)
+        ->orderBy('name')
+        ->get();
 
         $suppliers = Supplier::where(
     'is_active',
@@ -312,7 +314,9 @@ public function store(ProductRequest $request)
         $product->load('attributes');
 
 
-        $categories = Category::all();
+        $categories = Category::where('is_active', true)
+        ->orderBy('name')
+        ->get();
 
        $suppliers = Supplier::where(
     'is_active',

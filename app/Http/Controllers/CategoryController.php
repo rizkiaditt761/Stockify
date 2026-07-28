@@ -104,34 +104,54 @@ return view('pages.category.index', compact(
 
 
 
-    public function destroy(Category $category)
-    {
+    public function toggleStatus(Category $category)
+{
+    if ($category->is_active) {
+
+        $result = $this->categoryService->deactivate($category->id);
+
+        if (!$result['success']) {
+
+            return redirect()
+                ->route('categories.index')
+                ->with('error', $result['message']);
+        }
 
         $this->activityService->log(
 
             'Category',
 
-            'DELETE',
+            'DEACTIVATE',
 
-            'Menghapus kategori ' . $category->name,
+            'Menonaktifkan kategori ' . $category->name,
 
             $category
 
         );
 
-
-        $this->categoryService->delete(
-            $category->id
-        );
-
-
         return redirect()
             ->route('categories.index')
-            ->with(
-                'success',
-                'Category deleted successfully.'
-            );
+            ->with('success', $result['message']);
     }
+
+    $result = $this->categoryService->activate($category->id);
+
+    $this->activityService->log(
+
+        'Category',
+
+        'ACTIVATE',
+
+        'Mengaktifkan kategori ' . $category->name,
+
+        $category
+
+    );
+
+    return redirect()
+        ->route('categories.index')
+        ->with('success', $result['message']);
+}
 
 
 

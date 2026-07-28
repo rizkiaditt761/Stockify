@@ -599,7 +599,7 @@
                                     <form
                                         action="{{ route('users.deactivate',$user->id) }}"
                                         method="POST"
-                                        onsubmit="return confirm('Nonaktifkan user ini?')">
+                                        class="stockify-confirm">
 
 
                                         @csrf
@@ -631,7 +631,7 @@
                                     <form
                                         action="{{ route('users.activate',$user->id) }}"
                                         method="POST"
-                                        onsubmit="return confirm('Aktifkan kembali user ini?')">
+                                        class="stockify-confirm">
 
 
                                         @csrf

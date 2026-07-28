@@ -4,7 +4,11 @@ namespace App\Repositories\Category;
 
 use LaravelEasyRepository\Repository;
 
-interface CategoryRepository extends Repository{
+interface CategoryRepository extends Repository
+{
+    public function deactivate($id);
 
-    // Write something awesome :)
+    public function activate($id);
+
+    public function hasProducts($id);
 }

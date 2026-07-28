@@ -134,7 +134,12 @@ Route::get(
         Route::resource(
             'categories',
             CategoryController::class
-        );
+        )->except('destroy');
+
+        Route::patch(
+            '/categories/{category}/toggle-status',
+            [CategoryController::class, 'toggleStatus']
+        )->name('categories.toggleStatus');
 
         // Category Attribute
         Route::prefix('categories/{category}')

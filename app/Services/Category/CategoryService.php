@@ -4,7 +4,11 @@ namespace App\Services\Category;
 
 use LaravelEasyRepository\BaseService;
 
-interface CategoryService extends BaseService{
+interface CategoryService extends BaseService
+{
+    public function deactivate($id);
 
-    // Write something awesome :)
+    public function activate($id);
+
+    public function hasProducts($id);
 }

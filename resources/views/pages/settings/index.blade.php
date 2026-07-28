@@ -48,16 +48,7 @@
 
 
 
-            <div
-                class="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold backdrop-blur">
-
-
-                <span class="h-2.5 w-2.5 rounded-full bg-green-400"></span>
-
-                Konfigurasi Aktif
-
-
-            </div>
+            
 
 
         </div>

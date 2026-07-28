@@ -55,7 +55,9 @@
             document.documentElement.classList.remove('dark');
         }
     </script>
-
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
 
 @php
@@ -159,6 +161,36 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sidebar = document.getElementById('sidebar-scroll');
+
+    if(sidebar){
+
+        sidebar.scrollTop = localStorage.getItem('sidebar-scroll') || 0;
+
+        sidebar.addEventListener('scroll', function(){
+
+            localStorage.setItem(
+                'sidebar-scroll',
+                sidebar.scrollTop
+            );
+
+        });
+
+    }
+
+});
+
+</script>
+
+{{-- SweetAlert2 --}}
+
+
+<x-stockify-alert />
 
 </body>
 

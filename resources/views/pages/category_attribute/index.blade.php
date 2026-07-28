@@ -31,11 +31,7 @@
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
-        @if(session('success'))
-            <div class="mb-6 rounded-lg bg-green-100 border border-green-200 p-4 text-green-700">
-                {{ session('success') }}
-            </div>
-        @endif
+        
 
 
 

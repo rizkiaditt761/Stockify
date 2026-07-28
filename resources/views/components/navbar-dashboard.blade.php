@@ -200,7 +200,8 @@
 
                 <div class="border-t">
 
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}"
+                    class="stockify-confirm">
 
                         @csrf
 

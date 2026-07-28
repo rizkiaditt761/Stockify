@@ -100,16 +100,7 @@
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
 
-        {{-- Alert --}}
-        @if(session('success'))
-
-        <div class="mx-5 mt-5 p-4 rounded-lg bg-green-100 text-green-700">
-
-            {{ session('success') }}
-
-        </div>
-
-        @endif
+       
 
 
 
@@ -139,6 +130,10 @@
 
             <th class="px-6 py-4 text-center">
                 Total Atribut
+            </th>
+
+            <th class="px-6 py-4 text-center">
+                Status
             </th>
 
             <th class="px-6 py-4 text-center">
@@ -197,9 +192,31 @@
 
             </td>
 
+            <td class="px-6 py-4 text-center">
+
+    @if($category->is_active)
+
+        <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+
+            Aktif
+
+        </span>
+
+    @else
+
+        <span class="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+
+            Inaktif
+
+        </span>
+
+    @endif
+
+</td>
+
             <td class="px-6 py-4">
 
-                <div class="flex justify-center gap-2">
+                <div class="flex justify-start gap-2">
 
                     <a href="{{ route('categories.edit',$category->id) }}"
                         class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -216,20 +233,34 @@
                     </a>
 
                     <form
-                        action="{{ route('categories.destroy',$category->id) }}"
-                        method="POST"
-                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
-
+    action="{{ route('categories.toggleStatus',$category->id) }}"
+    method="POST"
+    class="stockify-confirm"
+    onsubmit="console.log('CATEGORY FORM SUBMIT'); return false;">
                         @csrf
-                        @method('DELETE')
+                        @method('PATCH')
 
-                        <button
-                            type="submit"
-                            class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        @if($category->is_active)
 
-                            Hapus
+                            <button
+                                type="submit"
+                                class="rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-700">
 
-                        </button>
+                                Nonaktifkan
+
+                            </button>
+
+                        @else
+
+                            <button
+                                type="submit"
+                                class="rounded-lg bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700 ">
+
+                                Aktifkan
+
+                            </button>
+
+                        @endif
 
                     </form>
 
@@ -243,7 +274,7 @@
 
         <tr>
 
-            <td colspan="6"
+            <td colspan="7"
                 class="text-center py-10 text-gray-500">
 
                 Belum ada kategori.
