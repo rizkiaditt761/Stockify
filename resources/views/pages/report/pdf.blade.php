@@ -1037,6 +1037,23 @@ Belum ada aktivitas.
 @endif
 
 
+<hr style="margin-top:40px; margin-bottom:25px;">
+
+<table style="width:100%; border:none; margin-top:40px;">
+    <tr>
+
+        <td style="width:50%; border:none; text-align:right; padding-right:20px; vertical-align:top;">
+
+            <p style="padding-right:25px;">Mengetahui,</p>
+
+            <br><br><br>
+
+            ____________________
+
+        </td>
+
+    </tr>
+</table>
 
 
 </body>

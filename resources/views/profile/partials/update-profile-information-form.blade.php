@@ -65,13 +65,11 @@
             </label>
 
             <input
-                id="email"
-                name="email"
                 type="email"
-                value="{{ old('email', $user->email) }}"
-                required
-                class="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-
+                value="{{ $user->email }}"
+                readonly
+                class="w-full rounded-lg border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed">
+                          
             @error('email')
 
                 <p class="mt-2 text-sm text-red-500">

@@ -296,7 +296,7 @@
 
         <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 -ml-1">
 
-            Active
+            Aktif
 
         </span>
 
@@ -304,7 +304,7 @@
 
         <span class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 -ml-2">
 
-            Inactive
+            Nonaktif
 
         </span>
 
@@ -352,7 +352,7 @@
                 <button
                     class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
 
-                    Deactivate
+                    Nonaktifkan
 
                 </button>
 
@@ -370,7 +370,7 @@
                 <button
                     class="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
 
-                    Activate
+                    Aktifkan
 
                 </button>
 

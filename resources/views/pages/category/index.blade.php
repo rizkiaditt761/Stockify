@@ -204,9 +204,9 @@
 
     @else
 
-        <span class="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+        <span class="inline-flex rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
 
-            Inaktif
+            Nonaktif
 
         </span>
 

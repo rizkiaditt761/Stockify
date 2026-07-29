@@ -80,36 +80,16 @@
                     </label>
 
                     <input
-                        type="email"
-                        name="email"
-                        value="{{ old('email',$user->email) }}"
-                        placeholder="Masukkan email"
-                        class="w-full rounded-lg border-gray-300 p-2.5 focus:ring-blue-500 focus:border-blue-500">
-
+                    type="email"
+                    value="{{ $user->email }}"
+                    readonly
+                    class="w-full rounded-lg border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed">
+                                
                 </div>
 
 
 
-                {{-- Password --}}
-                <div>
-
-                    <label class="block mb-2 text-sm font-medium text-gray-700">
-                        Password Baru
-                    </label>
-
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Kosongkan jika tidak diganti"
-                        class="w-full rounded-lg border-gray-300 p-2.5 focus:ring-blue-500 focus:border-blue-500">
-
-                    <p class="mt-2 text-xs text-gray-500">
-
-                        Kosongkan jika tidak ingin mengganti password.
-
-                    </p>
-
-                </div>
+                
 
 
 

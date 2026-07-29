@@ -526,7 +526,7 @@
                                     class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
 
 
-                                    Active
+                                    Aktif
 
 
                                 </span>
@@ -541,7 +541,7 @@
                                     class="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
 
 
-                                    Inactive
+                                    Nonaktif
 
 
                                 </span>
